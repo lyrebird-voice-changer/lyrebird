@@ -1,7 +1,3 @@
-'''
-Provides functionality for loading and parsing config files
-'''
-
 import toml
 import pathlib
 from dataclasses import dataclass
@@ -12,6 +8,11 @@ class Configuration:
     buffer_size: int
 
 def load_config():
+    '''
+    Loads the config file located at ~/.config/lyrebird/config.toml, parses it
+    and returns a `Configuration` object.
+    '''
+    
     config = {}
 
     path = Path(Path.home() / '.config' / 'lyrebird' / 'config.toml')

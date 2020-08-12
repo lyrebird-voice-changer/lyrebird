@@ -6,7 +6,7 @@ import subprocess
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
-# Core imports, will be moved into src/core
+# Core imports
 import src.core.presets as presets
 import src.core.state as state
 import src.core.config as config
@@ -130,12 +130,14 @@ class MainWindow(Gtk.Window):
         about.destroy()
 
     def open_pavucontrol_clicked(self, button):
-        subprocess.call(['pavucontrol'])
+        subprocess.Popen('pavucontrol'.split(' '))
 
     def toggle_activated(self, switch, gparam):
         if switch.get_active():
             # Load module-null-sink
-            sink = subprocess.check_call('pactl load-module module-null-sink'.split(' '))
+            sink = subprocess.check_call('pacmd load-module module-null-sink sink_name=Lyrebird'.split(' '))
+            subprocess.check_call('pacmd update-sink-proplist Lyrebird device.description=Lyrebird'.split(' '))
+
             state.sink = sink
 
             # Kill the sox process
