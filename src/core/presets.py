@@ -1,5 +1,6 @@
 import toml
-from typing import List
+import pathlib
+from pathlib import Path
 
 class Preset:
     def __init__(self, name, pitch_value, downsample_amount, override_pitch):
@@ -25,9 +26,8 @@ def load_presets():
 
     presets = []
 
-    import os
-    print(os.getcwd())
-    with open('/home/char/presets.toml', 'r') as f:
+    path = Path(Path.home() / '.config' / 'lyrebird' / 'presets.toml')
+    with open(path, 'r') as f:
         presets_data = toml.loads(f.read())['presets']
         for item in presets_data:
             preset = Preset.from_dict(item)
@@ -35,5 +35,3 @@ def load_presets():
 
     return presets
 
-
-effect_presets = []
