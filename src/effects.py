@@ -25,7 +25,9 @@ def load_presets():
 
     presets = []
 
-    with open('presets.toml', 'r') as f:
+    import os
+    print(os.getcwd())
+    with open('/home/char/presets.toml', 'r') as f:
         presets_data = toml.loads(f.read())['presets']
         for item in presets_data:
             preset = Preset.from_dict(item)

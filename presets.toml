@@ -49,6 +49,12 @@ downsample_amount = "8"
 override_pitch_slider = false
 
 [[presets]]
+name = "Radio"
+pitch_value = "scale"
+downsample_amount = "6"
+override_pitch_slider = false
+
+[[presets]]
 name = "Custom"
 pitch_value = "scale"
 downsample_amount = "none"

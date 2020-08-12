@@ -6,9 +6,9 @@ import subprocess
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
-import effects
-import state
-from effects import Preset
+import src.effects as effects
+import src.state as state
+from src.effects import Preset
 
 # Multiplier for pitch shifting
 sox_multiplier = 100
