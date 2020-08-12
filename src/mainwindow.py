@@ -117,7 +117,7 @@ class MainWindow(Gtk.Window):
         about.set_program_name('Lyrebird')
         about.set_copyright('(c) charlotte 2020')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
-        about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
+        about.set_logo(GdkPixbuf.Pixbuf.new_from_file('/usr/local/bin/lyrebird/icon.png'))
 
         about.run()
         about.destroy()
