@@ -10,15 +10,16 @@ is based *very* loosely off of Clownfish for Windows, and is very simple and eas
 - Built in effects for accurate male and female voices
 - Ability to create and load custom presets
 - Manual pitch scale for finer adjustment
-- Creates its own temporay virtual input device
+- Creates its own temporary virtual input device
 - A clean and easy to use GUI
 
 # Usage
-1. Run `install.sh` to install dependencies and Lyrebird itself
-2. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
-3. Select a preset or set a custom pitch and flip the switch
-4. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
-5. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
+1. Make sure you satisfy all requirements listed below (e.g. PulseAudio, sox)
+2. Run `install.sh` to install dependencies and Lyrebird itself
+3. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
+4. Select a preset or set a custom pitch and flip the switch
+5. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
+6. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
 
 ## Changing using `pavucontrol`
 If an app doesn't support live input changing then it can be done with `pavucontrol`. Head to the "Recording" tab and change the input using the drop down next to the application name.
@@ -34,7 +35,7 @@ allow-moves=yes
 ```
 
 # Editing Presets
-To edit the presets and add your own presets edit the file `presets.toml`. This file is in the TOML format,
+To edit the presets and add your own presets edit the file `~/.config/lyrebird/presets.toml`. This file is in the TOML format,
 and the syntax is described below.
 
 ```toml
