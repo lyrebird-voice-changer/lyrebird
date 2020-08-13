@@ -10,6 +10,7 @@ is based *very* loosely off of Clownfish for Windows, and is very simple and eas
 - Built in effects for accurate male and female voices
 - Ability to create and load custom presets
 - Manual pitch scale for finer adjustment
+- Creates its own temporay virtual input device
 - A clean and easy to use GUI
 
 # Usage
@@ -17,9 +18,7 @@ is based *very* loosely off of Clownfish for Windows, and is very simple and eas
 2. Make sure that the toggle switch is enabled on, this will create a new Null Output
 3. Select a preset from the UI, or select "Custom" to use a custom pitch of your own. Presets
    can be edited and added in `presets.toml`, see this file for the syntax for defining your own.
-4. Since Lyrebird uses `sox` behind the scenes, it outputs all of the effects to a special PulseAudio Null Output
-   sink. Change the input device of the application to record from "Null Output" in `pavucontrol` for
-   the applications you wish to change your voice in.
+4. Change the input device for your game or application to use "Lyrebird Virtual Input".
 
 # Editing Presets
 To edit the presets and add your own presets edit the file `presets.toml`. This file is in the TOML format,

@@ -24,7 +24,7 @@ def build_sox_command(preset, config_object=None, scale_object=None):
         effects.append('downsample 1')
 
     sox_effects = ' '.join(effects)
-    command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird {sox_effects}'
+    command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
 
     return command
 
@@ -37,10 +37,14 @@ def kill_sink(check_state=False):
     # Unload module-null-sink if there is a sink loaded
     if check_state:
         if state.sink != -1:
-            subprocess.call('pacmd unload-module module-null-sink sink_name=Lyrebird'.split(' '))
+            subprocess.call('pacmd unload-module module-null-sink'.split(' '))
+            subprocess.call('pacmd unload-module module-remap-source'.split(' '))
+
     else:
         # Just unload it anyways, we don't care about the sinks state
-        subprocess.call('pacmd unload-module module-null-sink sink_name=Lyrebird'.split(' '))
+        subprocess.call('pacmd unload-module module-null-sink'.split(' '))
+        subprocess.call('pacmd unload-module module-remap-source'.split(' '))
+
 
     # Kill the sox process
     subprocess.call('pkill sox'.split(' '))

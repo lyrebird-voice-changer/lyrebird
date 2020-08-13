@@ -39,11 +39,6 @@ class MainWindow(Gtk.Window):
         about_btn.connect('clicked', self.about_clicked)
         headerbar.pack_start(about_btn)
 
-        open_pavucontrol_btn = Gtk.Button()
-        open_pavucontrol_btn.props.image = Gtk.Button.new_from_icon_name('audio-x-generic-symbolic', Gtk.IconSize.BUTTON)
-        open_pavucontrol_btn.connect('clicked', self.open_pavucontrol_clicked)
-        headerbar.pack_start(open_pavucontrol_btn)
-
         self.set_titlebar(headerbar)
 
         # Unload the null sink module if there is one from last time.
@@ -129,16 +124,19 @@ class MainWindow(Gtk.Window):
         about.run()
         about.destroy()
 
-    def open_pavucontrol_clicked(self, button):
-        subprocess.Popen('pavucontrol'.split(' '))
-
     def toggle_activated(self, switch, gparam):
         if switch.get_active():
             # Load module-null-sink
-            sink = subprocess.check_call('pacmd load-module module-null-sink sink_name=Lyrebird'.split(' '))
-            subprocess.check_call('pacmd update-sink-proplist Lyrebird device.description=Lyrebird'.split(' '))
+            null_sink = subprocess.check_call('pacmd load-module module-null-sink sink_name=Lyrebird-Output'.split(' '))
+            remap_sink = subprocess.check_call('pacmd load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor'.split(' '))
+            
+            print(f'Loaded null output sink ({null_sink}), and remap sink ({remap_sink})')
+            
+            subprocess.check_call('pacmd update-sink-proplist Lyrebird-Output device.description="Lyrebird Output"'.split(' '))
+            subprocess.check_call('pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'.split(' '))
 
-            state.sink = sink
+
+            state.sink = null_sink
 
             # Kill the sox process
             subprocess.call('pkill sox'.split(' '))
