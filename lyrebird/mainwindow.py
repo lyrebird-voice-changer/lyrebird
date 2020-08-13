@@ -7,12 +7,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # Core imports
-import src.core.presets as presets
-import src.core.state as state
-import src.core.config as config
-import src.core.utils as utils
+import lyrebird.core.presets as presets
+import lyrebird.core.state as state
+import lyrebird.core.config as config
+import lyrebird.core.utils as utils
 
-from src.core.presets import Preset
+from lyrebird.core.presets import Preset
 
 # Multiplier for pitch shifting
 sox_multiplier = 100
@@ -47,14 +47,17 @@ class MainWindow(Gtk.Window):
         utils.kill_sink(check_state=False)
 
         # Load the configuration file
-        state.config = config.load_config()
+        try:
+            state.config = config.load_config()
 
-        # Set the icon
-        self.set_icon_from_file('icon.png')
+            # Set the icon
+            self.set_icon_from_file('icon.png')
 
-        # Build the UI
-        self.build_ui()
-
+            # Build the UI
+            self.build_ui()
+        except config.ConfigNotFoundError:
+            utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
+        
     def build_ui(self):
         self.vbox = Gtk.VBox()
 
@@ -106,15 +109,18 @@ class MainWindow(Gtk.Window):
         self.add(self.vbox)
 
     def create_flowbox_items(self, flowbox):
-        state.loaded_presets = presets.load_presets()
+        try:
+            state.loaded_presets = presets.load_presets()
 
-        for preset in state.loaded_presets:
-            button = Gtk.Button()
-            button.set_size_request(80, 80)
+            for preset in state.loaded_presets:
+                button = Gtk.Button()
+                button.set_size_request(80, 80)
 
-            button.set_label(preset.name)
-            button.connect('clicked', self.preset_clicked)
-            flowbox.add(button)
+                button.set_label(preset.name)
+                button.connect('clicked', self.preset_clicked)
+                flowbox.add(button)
+        except config.ConfigNotFoundError:
+            utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
 
     # Event handlers
     def about_clicked(self, button):

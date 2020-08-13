@@ -1,6 +1,7 @@
 import toml
 import pathlib
 from pathlib import Path
+import lyrebird.core.config as config
 
 class Preset:
     def __init__(self, name, pitch_value, downsample_amount, override_pitch):
@@ -31,7 +32,7 @@ def load_presets():
 
     presets = []
 
-    path = Path(Path.home() / '.config' / 'lyrebird' / 'presets.toml')
+    path = config.get_config_path('presets.toml')
     with open(path, 'r') as f:
         presets_data = toml.loads(f.read())['presets']
         for item in presets_data:

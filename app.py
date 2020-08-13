@@ -2,8 +2,8 @@
 import gi
 import subprocess
 
-import src.mainwindow as mainwindow
-import src.core.utils as utils
+import lyrebird.mainwindow as mainwindow
+import lyrebird.core.utils as utils
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk

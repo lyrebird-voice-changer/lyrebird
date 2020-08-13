@@ -1,6 +1,11 @@
 import subprocess
-import src.core.state as state
-import src.core.config as config
+import lyrebird.core.state as state
+import lyrebird.core.config as config
+import sys
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf
 
 def build_sox_command(preset, config_object=None, scale_object=None):
     '''
@@ -48,3 +53,20 @@ def kill_sink(check_state=False):
 
     # Kill the sox process
     subprocess.call('pkill sox'.split(' '))
+
+def show_error_message(msg, parent, title):
+    '''
+    Create an error message dialog with string message.
+    '''
+    dialog = Gtk.MessageDialog(
+        parent         = None,
+        type           = Gtk.MessageType.ERROR,
+        buttons        = Gtk.ButtonsType.OK,
+        message_format = msg)
+    dialog.set_transient_for(parent)
+    dialog.set_title(title)
+
+    dialog.show()
+    dialog.run()
+    dialog.destroy()
+    sys.exit(1)

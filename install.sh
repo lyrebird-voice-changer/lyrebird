@@ -4,7 +4,7 @@
 
 BIN_PATH="/usr/local/bin/lyrebird/"
 DESKTOP_PATH="/usr/local/share/applications/"
-CONFIG_PATH="/home/$USER/.config/lyrebird/"
+CONFIG_PATH="/etc/lyrebird"
 
 # Required pip3 modules space separated
 REQUIRED_PIP_MODULES="toml"
@@ -45,7 +45,7 @@ EOF
 }
 
 install_binary_source() {
-    sudo cp -rf src "$BIN_PATH"
+    sudo cp -rf lyrebird "$BIN_PATH"
     sudo cp icon.png "$BIN_PATH"
     sudo cp app.py "$BIN_PATH"
 

@@ -2,9 +2,7 @@
 Simple and powerful voice changer for Linux, written in GTK 3.
 
 # Why?
-I decided to write this as a tool for myself, partly for fun and partly
-because I hate my own voice and since there was no decent Linux voice changers. The UI
-is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
+I decided to write this as a tool for myself, partly for fun and partly because I hate my own voice and since there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
 
 # Features
 - Built in effects for accurate male and female voices
@@ -35,8 +33,9 @@ allow-moves=yes
 ```
 
 # Editing Presets
-To edit the presets and add your own presets edit the file `~/.config/lyrebird/presets.toml`. This file is in the TOML format,
-and the syntax is described below.
+Presets and config is initally stored in `/etc/lyrebird/` however it can be overriden by copying the files to `~/.config/lyrebird/`.
+
+To edit the presets and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
 
 ```toml
 # name = Preset name, will be displayed in the GUI
