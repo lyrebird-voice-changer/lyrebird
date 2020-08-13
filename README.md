@@ -14,11 +14,24 @@ is based *very* loosely off of Clownfish for Windows, and is very simple and eas
 - A clean and easy to use GUI
 
 # Usage
-1. Open Lyrebird by running `python src/app.py` (a .desktop file will be made later)
-2. Make sure that the toggle switch is enabled on, this will create a new Null Output
-3. Select a preset from the UI, or select "Custom" to use a custom pitch of your own. Presets
-   can be edited and added in `presets.toml`, see this file for the syntax for defining your own.
-4. Change the input device for your game or application to use "Lyrebird Virtual Input".
+1. Run `install.sh` to install dependencies and Lyrebird itself
+2. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
+3. Select a preset or set a custom pitch and flip the switch
+4. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
+5. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
+
+## Changing using `pavucontrol`
+If an app doesn't support live input changing then it can be done with `pavucontrol`. Head to the "Recording" tab and change the input using the drop down next to the application name.
+
+### I can't?
+For some apps on some distros (like Ubuntu) changing the input won't work. To fix this you need to create a file at `~/.alsoftrc` and add the following contents:
+
+```
+drivers = alsa,pulse,core,oss
+
+[pulse]
+allow-moves=yes
+```
 
 # Editing Presets
 To edit the presets and add your own presets edit the file `presets.toml`. This file is in the TOML format,
