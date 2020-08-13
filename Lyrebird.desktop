@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Type=Application
-Terminal=false
-Exec=python /usr/local/bin/lyrebird/app.py
 Name=Lyrebird
+GenericName=Voice Changer
 Icon=/usr/local/bin/lyrebird/icon.png
+Exec=python3 /usr/local/bin/lyrebird/app.py
+Terminal=false
+Categories=Audio;

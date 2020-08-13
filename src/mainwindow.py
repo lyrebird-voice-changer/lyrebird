@@ -49,6 +49,9 @@ class MainWindow(Gtk.Window):
         # Load the configuration file
         state.config = config.load_config()
 
+        # Set the icon
+        self.set_icon_from_file('icon.png')
+
         # Build the UI
         self.build_ui()
 

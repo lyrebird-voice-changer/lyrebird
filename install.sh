@@ -6,6 +6,9 @@ BIN_PATH="/usr/local/bin/lyrebird/"
 DESKTOP_PATH="/usr/local/share/applications/"
 CONFIG_PATH="/home/$USER/.config/lyrebird/"
 
+# Required pip3 modules space separated
+REQUIRED_PIP_MODULES="toml"
+
 # Create all of the directories if they don't exist
 if [ ! -d "$BIN_PATH" ]; then
     sudo mkdir -p "$BIN_PATH"
@@ -21,6 +24,12 @@ if [ ! -d "$CONFIG_PATH" ]; then
     sudo mkdir -p "$CONFIG_PATH"
     echo "$CONFIG_PATH didn't exist before, just created it"
 fi
+
+install_python_modules() {
+    echo "Installing required pip3 modules"
+    # Var not included in quotes so it installs each module
+    pip3 install $REQUIRED_PIP_MODULES
+}
 
 create_config() {
     sudo tee "$CONFIG_PATH/config.toml" <<-EOF
@@ -54,6 +63,7 @@ install_desktop() {
     sudo cp Lyrebird.desktop "$DESKTOP_PATH"
 }
 
+install_python_modules
 install_binary_source
 install_desktop
 
