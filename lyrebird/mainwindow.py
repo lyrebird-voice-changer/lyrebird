@@ -126,7 +126,7 @@ class MainWindow(Gtk.Window):
     def about_clicked(self, button):
         about = Gtk.AboutDialog()
         about.set_program_name('Lyrebird Voice Changer')
-        about.set_version("v1.0.0")
+        about.set_version("v1.0.1")
         about.set_copyright('(c) Charlotte 2020')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('/usr/local/bin/lyrebird/icon.png'))

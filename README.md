@@ -35,7 +35,7 @@ allow-moves=yes
 # Editing Presets
 Presets and config is initally stored in `/etc/lyrebird/` however it can be overriden by copying the files to `~/.config/lyrebird/`.
 
-To edit the presets and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
+To edit and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
 
 ```toml
 # name = Preset name, will be displayed in the GUI
