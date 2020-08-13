@@ -58,3 +58,4 @@ override_pitch_slider = true
 - pavucontrol
 - sox
 - PulseAudio
+- libsox-fmt-pulse
