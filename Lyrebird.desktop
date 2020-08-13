@@ -6,5 +6,6 @@ Name=Lyrebird
 GenericName=Voice Changer
 Icon=/usr/local/bin/lyrebird/icon.png
 Exec=python3 /usr/local/bin/lyrebird/app.py
+Path=/usr/local/bin/lyrebird/
 Terminal=false
 Categories=Audio;
