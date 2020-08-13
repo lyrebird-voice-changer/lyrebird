@@ -56,11 +56,15 @@ install_binary_source() {
     if [ ! -f "$CONFIG_PATH/config.toml" ]; then
         create_config
     fi
+
+    sudo chmod -R 755 "$BIN_PATH"
+    sudo chmod -R 755 "$CONFIG_PATH"
 }
 
 install_desktop() {
     # Copy the desktop file to
     sudo cp Lyrebird.desktop "$DESKTOP_PATH"
+    sudo chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"
 }
 
 install_python_modules
