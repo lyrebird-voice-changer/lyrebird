@@ -3,6 +3,8 @@ Simple and powerful voice changer for Linux, written in GTK 3.
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/chxrlt/lyrebird/master/preview.png)
 
+[Discord](https://discord.gg/kBsRCWz) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
+
 # Why?
 I decided to write this as a tool for myself, partly for fun and partly because I hate my own voice and since there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
 
