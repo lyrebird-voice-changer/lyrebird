@@ -14,7 +14,7 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 - A clean and easy to use GUI
 
 # Usage
-1. Make sure you satisfy all requirements listed below (e.g. PulseAudio, sox)
+1. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
 2. Run `install.sh` to install dependencies and Lyrebird itself
 3. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
 4. Select a preset or set a custom pitch and flip the switch
@@ -33,6 +33,14 @@ drivers = alsa,pulse,core,oss
 [pulse]
 allow-moves=yes
 ```
+
+## Common Issues
+
+### `ModuleNotFoundError: No module named 'lyrebird.mainwindow'`
+
+Firstly make sure you've ran the most up-to-date `install.sh` script. If the issue still persists then this is probably a permissions issue, running `sudo chmod -R 755 /usr/bin/lyrebird /etc/lyrebird` should fix this.
+
+If the issue still sticks around then please open a GitHub issue and include the output of `sudo ls -la /usr/bin/lyrebird/lyrebird`.
 
 # Editing Presets
 Presets and config is initally stored in `/etc/lyrebird/` however it can be overriden by copying the files to `~/.config/lyrebird/`.
@@ -54,8 +62,10 @@ override_pitch_slider = true
 ```
 
 # Requirements
-- python-gobject
+- Python 3.7+
+    - toml
+    - python-gobject (check [issue #13](https://github.com/chxrlt/lyrebird/issues/13) if having issues)
 - pavucontrol
-- sox
+- SoX
+    - libsox-fmt-pulse (some distros may already bundle with SoX)
 - PulseAudio
-- libsox-fmt-pulse
