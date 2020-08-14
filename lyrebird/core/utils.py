@@ -7,6 +7,10 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
+
+def key_or_default(key, dict, default):
+    return dict[key] if key in dict else default
+
 def build_sox_command(preset, config_object=None, scale_object=None):
     '''
     Builds and returns a sox command from a preset object
@@ -14,6 +18,8 @@ def build_sox_command(preset, config_object=None, scale_object=None):
     multiplier = 100
     effects = []
 
+
+    # Pitch shift
     if preset.pitch_value == 'default':
         effects.append('pitch 0')
     if preset.pitch_value == 'scale':
@@ -21,6 +27,13 @@ def build_sox_command(preset, config_object=None, scale_object=None):
     else:
         effects.append(f'pitch {float(preset.pitch_value) * multiplier}')
 
+    # Volume boosting
+    if preset.volume_boost == 'default' or preset.volume_boost == None:
+        effects.append('vol 0dB')
+    else:
+        effects.append(f'vol {int(preset.volume_boost)}dB')
+
+    # Downsampling
     if preset.downsample_amount != 'none':
         effects.append(f'downsample {int(preset.downsample_amount)}')
     else:

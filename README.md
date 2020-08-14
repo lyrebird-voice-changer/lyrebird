@@ -54,6 +54,7 @@ To edit and add your own presets edit the file `presets.toml`, this file is in t
 # pitch_value = The pitch value of the preset, if you want to be able to adjust this use "scale"
 # downsample_amount = The amount of downsampling to do, set as "none" if you don't want any
 # override_pitch_slider = Whether the preset overrides the pitch slider or not
+# volume_boost = The amount of decibels to boost by
 
 # Example preset, the [[presets]] is required for each preset
 [[presets]]
@@ -61,6 +62,9 @@ name = "Woman"
 pitch_value = "2.5"
 downsample_amount = "none"
 override_pitch_slider = true
+
+# Boost by 2 dB to make the voice louder
+volume_boost = "2"
 ```
 
 # Requirements
