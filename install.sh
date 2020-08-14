@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 # Lyrebird installer script. Copies the source code to /usr/local/bin
 # and copies the desktop file to /usr/local/share/applications.
+
+[ "$(id -u)" != 0 ] && { echo "The installer must be run as root." ; exit 1 ; }
 
 BIN_PATH="/usr/local/bin/lyrebird/"
 DESKTOP_PATH="/usr/local/share/applications/"
@@ -11,17 +13,17 @@ REQUIRED_PIP_MODULES="toml"
 
 # Create all of the directories if they don't exist
 if [ ! -d "$BIN_PATH" ]; then
-    sudo mkdir -p "$BIN_PATH"
+    mkdir -p "$BIN_PATH"
     echo "$BIN_PATH didn't exist before, just created it"
 fi
 
 if [ ! -d "/usr/local/share/applications/" ]; then
-    sudo mkdir -p "$DESKTOP_PATH"
+    mkdir -p "$DESKTOP_PATH"
     echo "$DESKTOP_PATH didn't exist before, just created it"
 fi
 
 if [ ! -d "$CONFIG_PATH" ]; then
-    sudo mkdir -p "$CONFIG_PATH"
+    mkdir -p "$CONFIG_PATH"
     echo "$CONFIG_PATH didn't exist before, just created it"
 fi
 
@@ -45,26 +47,26 @@ EOF
 }
 
 install_binary_source() {
-    sudo cp -rf lyrebird "$BIN_PATH"
-    sudo cp icon.png "$BIN_PATH"
-    sudo cp app.py "$BIN_PATH"
+    cp -rf lyrebird "$BIN_PATH"
+    cp icon.png "$BIN_PATH"
+    cp app.py "$BIN_PATH"
 
     # Copy presets.toml to .config/lyrebird
-    sudo cp presets.toml "$CONFIG_PATH"
+    cp presets.toml "$CONFIG_PATH"
 
     # Create the config file if it doesn't exist already
     if [ ! -f "$CONFIG_PATH/config.toml" ]; then
         create_config
     fi
 
-    sudo chmod -R 755 "$BIN_PATH"
-    sudo chmod -R 755 "$CONFIG_PATH"
+    chmod -R 755 "$BIN_PATH"
+    chmod -R 755 "$CONFIG_PATH"
 }
 
 install_desktop() {
     # Copy the desktop file to
-    sudo cp Lyrebird.desktop "$DESKTOP_PATH"
-    sudo chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"
+    cp Lyrebird.desktop "$DESKTOP_PATH"
+    chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"
 }
 
 install_python_modules
