@@ -59,7 +59,7 @@ class MainWindow(Gtk.Window):
             self.build_ui()
         except config.ConfigNotFoundError:
             utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
-        
+
     def build_ui(self):
         self.vbox = Gtk.VBox()
 
@@ -77,7 +77,7 @@ class MainWindow(Gtk.Window):
         # Pitch shift scale
         self.hbox_pitch = Gtk.HBox()
         self.pitch_label = Gtk.Label('Pitch Shift ')
-        self.pitch_label.set_halign(Gtk.Align.START)   
+        self.pitch_label.set_halign(Gtk.Align.START)
 
         self.pitch_adj = Gtk.Adjustment(0, -10, 10, 5, 10, 0)
         self.pitch_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=self.pitch_adj)
@@ -86,7 +86,7 @@ class MainWindow(Gtk.Window):
 
         # By default, disable the pitch shift slider to force the user to pick an effect
         self.pitch_scale.set_sensitive(False)
-        
+
         self.hbox_pitch.pack_start(self.pitch_label, False, False, 0)
         self.hbox_pitch.pack_end(self.pitch_scale, True, True, 0)
 
@@ -122,7 +122,7 @@ class MainWindow(Gtk.Window):
                 button.connect('clicked', self.preset_clicked)
                 flowbox.add(button)
         except config.ConfigNotFoundError:
-            utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
+            utils.show_error_message('Preset file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Presets')
 
     # Event handlers
     def about_clicked(self, button):
@@ -131,7 +131,7 @@ class MainWindow(Gtk.Window):
         about.set_version("v1.0.1")
         about.set_copyright('(c) Charlotte 2020')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
-        about.set_logo(GdkPixbuf.Pixbuf.new_from_file('/usr/local/bin/lyrebird/icon.png'))
+        about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
 
         about.run()
         about.destroy()
@@ -174,14 +174,14 @@ class MainWindow(Gtk.Window):
                 self.pitch_scale.set_sensitive(False)
 
                 command = utils.build_sox_command(
-                    current_preset, 
+                    current_preset,
                     config_object=state.config
                 )
             else:
                 self.pitch_scale.set_sensitive(True)
                 command = utils.build_sox_command(
-                    current_preset, 
-                    config_object=state.config, 
+                    current_preset,
+                    config_object=state.config,
                     scale_object=self.pitch_scale
                 )
             self.sox_process = subprocess.Popen(command.split(' '))
@@ -192,7 +192,7 @@ class MainWindow(Gtk.Window):
     def pitch_scale_moved(self, event):
         global sox_multiplier
         # Very hacky code, we repeatedly kill sox, grab the new value to pitch shift
-        # by, and then restart the process. 
+        # by, and then restart the process.
 
         # Only allow adjusting the pitch if the preset doesn't override the pitch
         if state.current_preset is not None:
@@ -202,8 +202,8 @@ class MainWindow(Gtk.Window):
             if not state.current_preset.override_pitch:
                 # Multiply the pitch shift scale value by the multiplier and feed it to sox
                 command = utils.build_sox_command(
-                    state.current_preset, 
-                    config_object=state.config, 
+                    state.current_preset,
+                    config_object=state.config,
                     scale_object=self.pitch_scale
                 )
                 self.sox_process = subprocess.Popen(command.split(' '))
@@ -222,14 +222,14 @@ class MainWindow(Gtk.Window):
             self.pitch_scale.set_sensitive(False)
 
             command = utils.build_sox_command(
-                state.current_preset, 
+                state.current_preset,
                 config_object=state.config
             )
         else:
             self.pitch_scale.set_sensitive(True)
             command = utils.build_sox_command(
-                state.current_preset, 
-                config_object=state.config, 
+                state.current_preset,
+                config_object=state.config,
                 scale_object=self.pitch_scale
             )
 

@@ -59,4 +59,3 @@ name = "Custom"
 pitch_value = "scale"
 downsample_amount = "none"
 override_pitch_slider = false
-
