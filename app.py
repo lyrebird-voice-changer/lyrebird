@@ -8,15 +8,14 @@ import lyrebird.core.utils as utils
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-def quit_all(arg):
-    # idk what arg is supposed to be, but it needs one argument
-    utils.kill_sink(check_state=False)
-
-    Gtk.main_quit()
 
 if __name__ == '__main__':
     win = mainwindow.MainWindow()
-    win.connect('destroy', quit_all)
+    win.connect('destroy', win.close)
     win.show_all()
 
-    Gtk.main()
+    try:
+        Gtk.main()
+    except BaseException as e:
+        win.close()
+        raise e
