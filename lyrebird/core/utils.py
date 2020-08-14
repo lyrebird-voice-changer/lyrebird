@@ -33,26 +33,16 @@ def build_sox_command(preset, config_object=None, scale_object=None):
 
     return command
 
-def kill_sink(check_state=False):
+def unload_pa_modules(check_state=False):
     '''
-    Unloads both the PulseAudio null output, and kills the sox process
+    Unloads both the PulseAudio null output
     If `check_state` is `True`, then this will check if `state.sink` is not -1.
     '''
 
-    # Unload module-null-sink if there is a sink loaded
-    if check_state:
-        if state.sink != -1:
-            subprocess.call('pacmd unload-module module-null-sink'.split(' '))
-            subprocess.call('pacmd unload-module module-remap-source'.split(' '))
-
-    else:
-        # Just unload it anyways, we don't care about the sinks state
-        subprocess.call('pacmd unload-module module-null-sink'.split(' '))
+    # Unload if we don't care about state, or we do and there is a sink loaded
+    if not check_state or state.sink != -1:
+        subprocess.call('pacmd unload-module module-null-sink'.split(" "))
         subprocess.call('pacmd unload-module module-remap-source'.split(' '))
-
-
-    # Kill the sox process
-    subprocess.call('pkill sox'.split(' '))
 
 def show_error_message(msg, parent, title):
     '''

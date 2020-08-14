@@ -2,6 +2,8 @@
 # Lyrebird installer script. Copies the source code to Python path
 # and copies the desktop file to $PREFIX/share/applications.
 
+[ "$(id -u)" != 0 ] && { echo "The installer must be run as root." ; exit 1 ; }
+
 INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
 CONFIG_PATH="/etc/lyrebird"
 
@@ -45,7 +47,6 @@ fi
 
 if [ ! -d "$CONFIG_PATH" ]; then
     mkdir -p "$CONFIG_PATH"
-    chmod -R 755 "$CONFIG_PATH"
     echo "$CONFIG_PATH didn't exist before, just created it"
 fi
 

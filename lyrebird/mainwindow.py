@@ -41,10 +41,12 @@ class MainWindow(Gtk.Window):
 
         self.set_titlebar(headerbar)
 
+        self.sox_process = None
+
         # Unload the null sink module if there is one from last time.
         # The only reason there would be one already, is if the application was closed without
         # toggling the switch to off (aka a crash was experienced).
-        utils.kill_sink(check_state=False)
+        utils.unload_pa_modules(check_state=False)
 
         # Load the configuration file
         try:
@@ -137,20 +139,31 @@ class MainWindow(Gtk.Window):
     def toggle_activated(self, switch, gparam):
         if switch.get_active():
             # Load module-null-sink
-            null_sink = subprocess.check_call('pacmd load-module module-null-sink sink_name=Lyrebird-Output'.split(' '))
-            remap_sink = subprocess.check_call('pacmd load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor'.split(' '))
-
+            null_sink = subprocess.check_call(
+                'pacmd load-module module-null-sink sink_name=Lyrebird-Output'.split(' ')
+            )
+            remap_sink = subprocess.check_call(
+                'pacmd load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor'\
+                    .split(' ')
+            )
+            
             print(f'Loaded null output sink ({null_sink}), and remap sink ({remap_sink})')
-
-            subprocess.check_call('pacmd update-sink-proplist Lyrebird-Output device.description="Lyrebird Output"'.split(' '))
-            subprocess.check_call('pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'.split(' '))
-
+            
+            subprocess.check_call(
+                'pacmd update-sink-proplist Lyrebird-Output device.description="Lyrebird Output"'\
+                    .split(' ')
+            )
+            subprocess.check_call(
+                'pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'\
+                    .split(' ')
+            )
+            
 
             state.sink = null_sink
 
             # Kill the sox process
-            subprocess.call('pkill sox'.split(' '))
-
+            self.terminate_sox()
+            
             # Use the default preset, which is "Man" if the loaded preset is not found.
             default_preset = state.loaded_presets[0]
 
@@ -171,9 +184,10 @@ class MainWindow(Gtk.Window):
                     config_object=state.config,
                     scale_object=self.pitch_scale
                 )
-            sox_process = subprocess.Popen(command.split(' '))
+            self.sox_process = subprocess.Popen(command.split(' '))
         else:
-            utils.kill_sink(check_state=True)
+            utils.unload_pa_modules(check_state=True)
+            self.terminate_sox()
 
     def pitch_scale_moved(self, event):
         global sox_multiplier
@@ -183,8 +197,8 @@ class MainWindow(Gtk.Window):
         # Only allow adjusting the pitch if the preset doesn't override the pitch
         if state.current_preset is not None:
             # Kill the sox process
-            subprocess.call('pkill sox'.split(' '))
-
+            self.terminate_sox()
+            
             if not state.current_preset.override_pitch:
                 # Multiply the pitch shift scale value by the multiplier and feed it to sox
                 command = utils.build_sox_command(
@@ -192,11 +206,11 @@ class MainWindow(Gtk.Window):
                     config_object=state.config,
                     scale_object=self.pitch_scale
                 )
-                sox_process = subprocess.Popen(command.split(' '))
+                self.sox_process = subprocess.Popen(command.split(' '))
 
     def preset_clicked(self, button):
         global sox_multiplier
-        subprocess.call(['pkill', 'sox'])
+        self.terminate_sox()
 
         # Use a filter to find the currently selected preset
         current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
@@ -219,4 +233,19 @@ class MainWindow(Gtk.Window):
                 scale_object=self.pitch_scale
             )
 
-        sox_process = subprocess.Popen(command.split(' '))
+        self.sox_process = subprocess.Popen(command.split(' '))
+
+    def terminate_sox(self, timeout=1):
+        if self.sox_process is not None:
+            self.sox_process.terminate()
+            try:
+                self.sox_process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                self.sox_process.kill()
+                self.sox_process.wait(timeout=timeout)
+            self.sox_process = None
+
+    def close(self, *args):
+        self.terminate_sox()
+        utils.unload_pa_modules(check_state=False)
+        Gtk.main_quit()
