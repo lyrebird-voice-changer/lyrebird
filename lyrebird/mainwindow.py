@@ -39,6 +39,8 @@ class MainWindow(Gtk.Window):
         about_btn.connect('clicked', self.about_clicked)
         headerbar.pack_start(about_btn)
 
+        self.set_wmclass ("Lyrebird", "Lyrebird")
+        self.set_title("Lyrebird")
         self.set_titlebar(headerbar)
 
         self.sox_process = None
