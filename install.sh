@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Lyrebird installer script. Copies the source code to Python path
 # and copies the desktop file to $PREFIX/share/applications.
 
