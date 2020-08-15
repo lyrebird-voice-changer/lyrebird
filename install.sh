@@ -16,6 +16,11 @@ DESKTOP_PATH="$INSTALL_PREFIX/share/applications/"
 PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')
 PYTHON_PATH="$INSTALL_PREFIX/lib/python$PYTHON_VERSION/site-packages"
 
+if [[ $PYTHON_VERSION -lt 3.7 ]]; then
+    echo "Python version $PYTHON_VERSION is not supported, Python version 3.7 or greater required" >&2
+    exit 1
+fi
+
 # Required pip3 modules space separated
 REQUIRED_PIP_MODULES="toml"
 
