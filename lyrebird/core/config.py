@@ -3,6 +3,7 @@ import pathlib
 from dataclasses import dataclass
 from pathlib import Path
 import lyrebird.core.config as config
+import os
 
 class ConfigNotFoundError(Exception):
     pass
@@ -11,17 +12,20 @@ class ConfigNotFoundError(Exception):
 class Configuration:
     buffer_size: int
 
-def get_config_path(file):
+def get_config_path(filename):
     '''
     Gets the requested config file, raises `ConfigNotFoundError` if none found
     '''
-    global_path = Path(Path('/etc') / 'lyrebird' / file)
-    user_path = Path(Path.home() / '.config' / 'lyrebird' / file)
+    global_path = Path('/etc') / 'lyrebird' / filename
+    user_path = Path.home() / '.config' / 'lyrebird' / filename
+    local_path = Path(os.getcwd()) / filename
 
     if user_path.exists():
         return user_path
     elif global_path.exists():
         return global_path
+    elif local_path.exists():
+        return local_path
     else:
         raise ConfigNotFoundError
 

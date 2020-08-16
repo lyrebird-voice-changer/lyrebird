@@ -1,0 +1,8 @@
+# Configuration file for Lyrebird
+# The following parameters are configurable
+
+# buffer_size = The buffer size to use for sox. Higher = better quality, at
+# the cost of higher latency. Default value is 1024
+
+[[config]]
+buffer_size = 1024

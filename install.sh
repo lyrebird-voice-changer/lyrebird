@@ -33,19 +33,6 @@ install_python_modules() {
     pip3 install $REQUIRED_PIP_MODULES
 }
 
-create_config() {
-    sudo tee "$CONFIG_PATH/config.toml" <<-EOF
-# Configuration file for Lyrebird
-# The following parameters are configurable
-
-# buffer_size = The buffer size to use for sox. Higher = better quality, at
-# the cost of higher latency. Default value is 1024
-
-[[config]]
-buffer_size = 1024
-EOF
-}
-
 install_binary_source() {
     cp -rf lyrebird "$BIN_PATH"
     cp icon.png "$BIN_PATH"
@@ -56,7 +43,7 @@ install_binary_source() {
 
     # Create the config file if it doesn't exist already
     if [ ! -f "$CONFIG_PATH/config.toml" ]; then
-        create_config
+        cp config.toml "$CONFIG_PATH"
     fi
 
     chmod -R 755 "$BIN_PATH"
