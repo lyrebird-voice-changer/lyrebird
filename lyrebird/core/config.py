@@ -1,8 +1,10 @@
-import toml
-import pathlib
 from dataclasses import dataclass
 from pathlib import Path
+
+import toml
+
 import lyrebird.core.config as config
+
 
 class ConfigNotFoundError(Exception):
     pass
@@ -13,7 +15,8 @@ class Configuration:
 
 def get_config_path(file):
     '''
-    Gets the requested config file, raises `ConfigNotFoundError` if none found
+    Gets the requested config file.
+    Raises `ConfigNotFoundError` if none found.
     '''
     global_path = Path(Path('/etc') / 'lyrebird' / file)
     user_path = Path(Path.home() / '.config' / 'lyrebird' / file)

@@ -1,9 +1,10 @@
-import toml
-import pathlib
 from pathlib import Path
 
-from lyrebird.core.utils import key_or_default
+import toml
+
 import lyrebird.core.config as config
+from lyrebird.core.utils import key_or_default
+
 
 class Preset:
     def __init__(self, 
@@ -21,7 +22,7 @@ class Preset:
     @staticmethod
     def from_dict(d):
         '''
-        Constructs a `Preset` instance from a dictionary item and returns it
+        Constructs a `Preset` instance from a dictionary item and returns it.
         '''
 
         # pylint: disable=bad-continuation
@@ -35,18 +36,11 @@ class Preset:
 
 def load_presets():
     '''
-    Loads presets from ~/.config/lyrebird/presets.toml and returns
-    a list of `Preset` objects from the file
+    Loads presets from ~/.config/lyrebird/presets.toml
+    and returns a list of `Preset` objects from the file.
     '''
-
-    presets = []
 
     path = config.get_config_path('presets.toml')
     with open(path, 'r') as f:
         presets_data = toml.loads(f.read())['presets']
-        for item in presets_data:
-            preset = Preset.from_dict(item)
-            presets.append(preset)
-
-    return presets
-
+        return [Preset.from_dict(item) for item in presets_data]

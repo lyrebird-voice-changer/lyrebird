@@ -1,8 +1,8 @@
 #!/bin/python
 
-import gi
 import subprocess
 
+import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
@@ -12,19 +12,14 @@ import lyrebird.core.state as state
 import lyrebird.core.config as config
 import lyrebird.core.utils as utils
 
-from lyrebird.core.presets import Preset
-
-# Multiplier for pitch shifting
-sox_multiplier = 100
-
 class MainWindow(Gtk.Window):
     '''
-    Main window for Lyrebird
+    Main window for Lyrebird.
     Lyrebird is a simple and powerful voice changer for Linux, written in GTK 3.
     '''
 
     def __init__(self):
-        Gtk.Window.__init__(self, title='Lyrebird')
+        super().__init__(title='Lyrebird')
         self.set_border_width(10)
 
         self.set_size_request(600, 500)
@@ -53,15 +48,16 @@ class MainWindow(Gtk.Window):
         # Load the configuration file
         try:
             state.config = config.load_config()
-
-            # Set the icon
-            self.set_icon_from_file('icon.png')
-
-            # Build the UI
-            self.build_ui()
         except config.ConfigNotFoundError:
-            utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
-        
+            utils.show_error_message(
+                msg='Config file not found, run install.sh to reinstall Lyrebird.',
+                parent=self,
+                title='Missing Config'
+            )
+
+        self.set_icon_from_file('icon.png')
+        self.build_ui()
+
     def build_ui(self):
         self.vbox = Gtk.VBox()
 
@@ -159,11 +155,9 @@ class MainWindow(Gtk.Window):
                 'pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'\
                     .split(' ')
             )
-            
 
             state.sink = null_sink
 
-            # Kill the sox process
             self.terminate_sox()
             
             # Use the default preset, which is "Man" if the loaded preset is not found.
@@ -192,17 +186,14 @@ class MainWindow(Gtk.Window):
             self.terminate_sox()
 
     def pitch_scale_moved(self, event):
-        global sox_multiplier
         # Very hacky code, we repeatedly kill sox, grab the new value to pitch shift
         # by, and then restart the process. 
 
         # Only allow adjusting the pitch if the preset doesn't override the pitch
         if state.current_preset is not None:
-            # Kill the sox process
             self.terminate_sox()
             
             if not state.current_preset.override_pitch:
-                # Multiply the pitch shift scale value by the multiplier and feed it to sox
                 command = utils.build_sox_command(
                     state.current_preset, 
                     config_object=state.config, 
@@ -211,11 +202,13 @@ class MainWindow(Gtk.Window):
                 self.sox_process = subprocess.Popen(command.split(' '))
 
     def preset_clicked(self, button):
-        global sox_multiplier
         self.terminate_sox()
 
         # Use a filter to find the currently selected preset
-        current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
+        current_preset = next(filter(
+            lambda p: p.name == button.props.label,
+            state.loaded_presets
+        ))
         state.current_preset = current_preset
 
         if current_preset.override_pitch:
@@ -238,6 +231,10 @@ class MainWindow(Gtk.Window):
         self.sox_process = subprocess.Popen(command.split(' '))
 
     def terminate_sox(self, timeout=1):
+        """
+        Terminates the sox process
+        and if not possible, kills it.
+        """
         if self.sox_process is not None:
             self.sox_process.terminate()
             try:

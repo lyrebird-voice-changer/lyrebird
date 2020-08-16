@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-import gi
 import subprocess
 
-import lyrebird.mainwindow as mainwindow
-import lyrebird.core.utils as utils
-
+import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
+import lyrebird.core.utils as utils
+import lyrebird.mainwindow as mainwindow
+
 
 
 if __name__ == '__main__':

@@ -1,11 +1,13 @@
 import subprocess
-import lyrebird.core.state as state
-import lyrebird.core.config as config
 import sys
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import Gdk, GdkPixbuf, Gtk
+
+import lyrebird.core.config as config
+import lyrebird.core.state as state
+
 
 
 def key_or_default(key, dict, default):
@@ -13,33 +15,35 @@ def key_or_default(key, dict, default):
 
 def build_sox_command(preset, config_object=None, scale_object=None):
     '''
-    Builds and returns a sox command from a preset object
+    Builds and returns a sox command from a preset object.
     '''
-    multiplier = 100
     effects = []
 
-
     # Pitch shift
+    pitch_multiplier = 100
     if preset.pitch_value == 'default':
-        effects.append('pitch 0')
+        pitch_shift = 0
     if preset.pitch_value == 'scale':
-        effects.append(f'pitch {float(scale_object.get_value()) * multiplier}')
+        pitch_shift = float(scale_object.get_value()) * pitch_multiplier
     else:
-        effects.append(f'pitch {float(preset.pitch_value) * multiplier}')
+        pitch_shift = float(preset.pitch_value) * pitch_multiplier
+    effects.append(f'pitch {pitch_shift}')
 
     # Volume boosting
     if preset.volume_boost == 'default' or preset.volume_boost == None:
-        effects.append('vol 0dB')
+        volume_boost = 0
     else:
-        effects.append(f'vol {int(preset.volume_boost)}dB')
+        volume_boost = int(preset.volume_boost)
+    effects.append(f'vol {volume_boost}dB')
 
     # Downsampling
     if preset.downsample_amount != 'none':
-        effects.append(f'downsample {int(preset.downsample_amount)}')
+        downsample_amount = int(preset.downsample_amount)
     else:
         # Append downsample of 1 to fix a bug where the downsample isn't being reverted
         # when we disable the effect with it on.
-        effects.append('downsample 1')
+        downsample_amount = 1
+    effects.append(f'downsample {downsample_amount}')
 
     sox_effects = ' '.join(effects)
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
@@ -48,7 +52,7 @@ def build_sox_command(preset, config_object=None, scale_object=None):
 
 def unload_pa_modules(check_state=False):
     '''
-    Unloads both the PulseAudio null output
+    Unloads both the PulseAudio null output.
     If `check_state` is `True`, then this will check if `state.sink` is not -1.
     '''
 
