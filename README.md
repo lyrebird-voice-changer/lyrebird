@@ -2,6 +2,8 @@
 
 Simple and powerful voice changer for Linux, written in GTK 3.
 
+[Discord](https://discord.gg/9K7HfH) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
+
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/chxrlt/lyrebird/master/preview.png)
 
 # Why?
@@ -18,12 +20,13 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 
 # Usage
 
-1. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
-2. Run `install.sh` to install dependencies and Lyrebird itself
-3. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
-4. Select a preset or set a custom pitch and flip the switch
-5. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
-6. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
+1. [Download the latest version](https://github.com/chxrlt/lyrebird/archive/v1.0.2.tar.gz) (v1.0.2).
+2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
+3. Run `install.sh` to install dependencies and Lyrebird itself
+4. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
+5. Select a preset or set a custom pitch and flip the switch
+6. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
+7. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
 
 ## Changing using `pavucontrol`
 
@@ -59,6 +62,7 @@ To edit and add your own presets edit the file `presets.toml`, this file is in t
 # pitch_value = The pitch value of the preset, if you want to be able to adjust this use "scale"
 # downsample_amount = The amount of downsampling to do, set as "none" if you don't want any
 # override_pitch_slider = Whether the preset overrides the pitch slider or not
+# volume_boost = The amount of decibels to boost by
 
 # Example preset, the [[presets]] is required for each preset
 [[presets]]
@@ -66,6 +70,9 @@ name = "Woman"
 pitch_value = "2.5"
 downsample_amount = "none"
 override_pitch_slider = true
+
+# Boost by 2 dB to make the voice louder
+volume_boost = "2"
 ```
 
 # Requirements

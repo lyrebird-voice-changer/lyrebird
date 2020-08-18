@@ -47,12 +47,21 @@ name = "Russian Mic"
 pitch_value = "scale"
 downsample_amount = "8"
 override_pitch_slider = false
+volume_boost = "8"
 
 [[presets]]
 name = "Radio"
 pitch_value = "scale"
 downsample_amount = "6"
 override_pitch_slider = false
+volume_boost = "5"
+
+[[presets]]
+name = "Megaphone"
+pitch_value = "scale"
+downsample_amount = "2"
+override_pitch_slider = false
+volume_boost = "8"
 
 [[presets]]
 name = "Custom"
