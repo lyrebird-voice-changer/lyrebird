@@ -1,24 +1,83 @@
 #!/bin/sh
-# Lyrebird installer script. Copies the source code to Python path
-# and copies the desktop file to $PREFIX/share/applications.
+# Lyrebird installer script. If running as root then will install at /usr/local/{bin,share},
+# otherwise will install at ~/.local/{bin,share}.
 
-if [[ $EUID -eq 0 ]]; then
+VERSION="1.1"
+
+VERBOSE=1
+DRYRUN=0
+
+# Initial setup
+
+if [ $DRYRUN = 1 ]; then DRYRUN_INFO=" (dryrun)"; fi
+ECHO_PREFIX="[lyrebird]$DRYRUN_INFO"
+
+info_echo() {
+    echo "$ECHO_PREFIX $1"
+}
+
+warning_echo() {
+    echo "[warning]$DRYRUN_INFO $1"
+}
+
+verbose_echo() {
+    if [ $VERBOSE = 1 ]; then
+        echo "$ECHO_PREFIX $1"
+    fi
+}
+
+if [ "$(id -u)" -eq 0 ]; then
     INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
-    CONFIG_PATH="/etc/lyrebird"
 else
     INSTALL_PREFIX="${INSTALL_PREFIX:-$HOME/.local}"
-    CONFIG_PATH="$HOME/.config/lyrebird"
 fi
 
 BIN_PATH="$INSTALL_PREFIX/bin"
 SHARE_PATH="$INSTALL_PREFIX/share/lyrebird"
 DESKTOP_PATH="$INSTALL_PREFIX/share/applications/"
-PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')
-PYTHON_PATH="$INSTALL_PREFIX/lib/python$PYTHON_VERSION/site-packages"
 
-if [[ $PYTHON_VERSION -lt 3.7 ]]; then
-    echo "Python version $PYTHON_VERSION is not supported, Python version 3.7 or greater required" >&2
-    exit 1
+python_version_check() {
+    PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')
+
+    PYTHON_MIN_MAJOR=3
+    PYTHON_MIN_MINOR=7
+
+    PYTHON_MAJOR=${PYTHON_VERSION%.*}
+    PYTHON_MINOR=${PYTHON_VERSION#*.}
+
+    invalid_python() {
+        info_echo "Lyrebird requires Python version 3.7 or higher"
+    }
+
+    if [ "$PYTHON_MAJOR" -lt "$PYTHON_MIN_MAJOR" ]; then
+        invalid_python
+        exit 1
+    elif [ "$PYTHON_MAJOR" -eq "$PYTHON_MIN_MAJOR" ] && [ "$PYTHON_MINOR" -lt "$PYTHON_MIN_MINOR" ]; then
+        invalid_python
+        exit 1
+    fi
+}
+python_version_check
+
+# Removing previous versions
+remove_deprecated_install() {
+    if [ -d "$1" ] || [ -f "$1" ] ; then
+        if [ $2 -eq 1 ] && [ "$(id -u)" -ne 0 ]; then
+            warning_echo "Deprecated install location found, cannot remove without root access: $1"
+            return
+        fi
+
+        info_echo "Removing old install location: $1"
+        if [ $DRYRUN != 1 ]; then rm -rf $1; fi
+    fi
+}
+remove_deprecated_install "/usr/local/bin/lyrebird/" 1
+if [ "$(id -u)" -ne 0 ]; then
+    remove_deprecated_install "/usr/local/share/applications/Lyrebird.desktop" 1
+fi
+
+if [ -d "/etc/lyrebird/" ]; then
+    warning_echo "/etc/lyrebird/ is now deprecated, please relocate contents to ~/.config/lyrebird/ and delete"
 fi
 
 # Required pip3 modules space separated
@@ -26,77 +85,70 @@ REQUIRED_PIP_MODULES="toml"
 
 # Create all of the directories if they don't exist
 if [ ! -d "$BIN_PATH" ]; then
-    mkdir -p "$BIN_PATH"
-    chmod -R 755 "$BIN_PATH"
-    echo "$BIN_PATH didn't exist before, just created it"
+    verbose_echo "Creating binary path: $BIN_PATH"
+    if [ $DRYRUN != 1 ]; then
+        mkdir -p "$BIN_PATH"
+        chmod -R 755 "$BIN_PATH"
+    fi
 fi
 
 if [ ! -d "$SHARE_PATH" ]; then
-    mkdir -p "$SHARE_PATH"
-    chmod -R 755 "$SHARE_PATH"
-    echo "$SHARE_PATH didn't exist before, just created it"
-fi
-
-if [ ! -d "$PYTHON_PATH" ]; then
-    mkdir -p "$PYTHON_PATH"
-    chmod -R 755 "$PYTHON_PATH"
-    echo "$PYTHON_PATH didn't exist before, just created it"
+    verbose_echo "Creating share path: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then
+        mkdir -p "$SHARE_PATH"
+        chmod -R 755 "$SHARE_PATH"
+    fi
 fi
 
 if [ ! -d "$DESKTOP_PATH" ]; then
-    mkdir -p "$DESKTOP_PATH"
-    echo "$DESKTOP_PATH didn't exist before, just created it"
-fi
-
-if [ ! -d "$CONFIG_PATH" ]; then
-    mkdir -p "$CONFIG_PATH"
-    echo "$CONFIG_PATH didn't exist before, just created it"
+    verbose_echo "Creating desktop path: $DESKTOP_PATH"
+    if [ $DRYRUN != 1 ]; then
+        mkdir -p "$DESKTOP_PATH"
+    fi
 fi
 
 install_python_modules() {
-    echo "Installing required pip3 modules"
-    # Var not included in quotes so it installs each module
-    pip3 install --prefix $INSTALL_PREFIX $REQUIRED_PIP_MODULES
-}
-
-create_config() {
-    tee "$CONFIG_PATH/config.toml" <<-EOF
-# Configuration file for Lyrebird
-# The following parameters are configurable
-
-# buffer_size = The buffer size to use for sox. Higher = better quality, at
-# the cost of higher latency. Default value is 1024
-
-[[config]]
-buffer_size = 1024
-EOF
-}
-
-install_binary_source() {
-    cp -rf lyrebird "$PYTHON_PATH"
-    cp icon.png "$SHARE_PATH"
-    cp app.py "$SHARE_PATH"
-    cp entrypoint.sh "$BIN_PATH/lyrebird"
-    chmod +x "$BIN_PATH/lyrebird"
-
-    # Copy presets.toml to .config/lyrebird
-    cp presets.toml "$CONFIG_PATH"
-
-    # Create the config file if it doesn't exist already
-    if [ ! -f "$CONFIG_PATH/config.toml" ]; then
-        create_config
+    verbose_echo "Installing Python modules: $REQUIRED_PIP_MODULES"
+    if [ $DRYRUN != 1 ]; then
+        # Var not included in quotes so it installs each module
+        pip3 install --prefix $INSTALL_PREFIX $REQUIRED_PIP_MODULES
     fi
 }
 
-install_desktop() {
-    # Copy the desktop file to
-    BIN_PATH=$BIN_PATH SHARE_PATH=$SHARE_PATH envsubst < Lyrebird.desktop > $DESKTOP_PATH/Lyrebird.desktop
-    chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"
+install_binary_source() {
+    verbose_echo "Copying lyrebird/ to: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then cp -rf lyrebird "$SHARE_PATH"; fi
+
+    verbose_echo "Copying icon.png to: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then cp icon.png "$SHARE_PATH"; fi
+
+    verbose_echo "Copying app.py to: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then cp app.py "$SHARE_PATH"; fi
+
+    verbose_echo "Copying entrypoint.sh (lyrebird) to: $BIN_PATH"
+    if [ $DRYRUN != 1 ]; then cp entrypoint.sh "$BIN_PATH/lyrebird"; fi
+
+    verbose_echo "Setting permissions 755 recursively for: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then chmod -R 755 "$SHARE_PATH"; fi
 }
 
-install_python_modules
-install_binary_source
-install_desktop
+install_desktop() {
+    verbose_echo "Copying Lyrebird.desktop to: $DESKTOP_PATH"
+    if [ $DRYRUN != 1 ]; then BIN_PATH=$BIN_PATH SHARE_PATH=$SHARE_PATH envsubst < Lyrebird.desktop > $DESKTOP_PATH/Lyrebird.desktop; fi
 
-echo "Installed Lyrebird to $SHARE_PATH"
-echo "Installed Lyrebird.desktop to $DESKTOP_PATH"
+    verbose_echo "Setting permission 644 for: $DESKTOP_PATH/Lyrebird.desktop"
+    if [ $DRYRUN != 1 ]; then chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"; fi
+}
+
+verbose_space() { if [ $VERBOSE = 1 ]; then echo; fi }
+
+install_python_modules
+verbose_space
+
+install_binary_source
+verbose_space
+
+install_desktop
+verbose_space
+
+info_echo "Installed Lyrebird v$VERSION"
