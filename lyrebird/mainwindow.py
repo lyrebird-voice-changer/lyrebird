@@ -51,16 +51,14 @@ class MainWindow(Gtk.Window):
         utils.unload_pa_modules(check_state=False)
 
         # Load the configuration file
-        try:
-            state.config = config.load_config()
+        state.config = config.load_config()
 
-            # Set the icon
-            self.set_icon_from_file('icon.png')
+        # Set the icon
+        self.set_icon_from_file('icon.png')
 
-            # Build the UI
-            self.build_ui()
-        except config.ConfigNotFoundError:
-            utils.show_error_message('Config file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Config')
+        # Build the UI
+        self.build_ui()
+
 
     def build_ui(self):
         self.vbox = Gtk.VBox()
@@ -113,18 +111,15 @@ class MainWindow(Gtk.Window):
         self.add(self.vbox)
 
     def create_flowbox_items(self, flowbox):
-        try:
-            state.loaded_presets = presets.load_presets()
+        state.loaded_presets = presets.load_presets()
 
-            for preset in state.loaded_presets:
-                button = Gtk.Button()
-                button.set_size_request(80, 80)
+        for preset in state.loaded_presets:
+            button = Gtk.Button()
+            button.set_size_request(80, 80)
 
-                button.set_label(preset.name)
-                button.connect('clicked', self.preset_clicked)
-                flowbox.add(button)
-        except config.ConfigNotFoundError:
-            utils.show_error_message('Preset file not found, run install.sh to reinstall Lyrebird.', self, 'Missing Presets')
+            button.set_label(preset.name)
+            button.connect('clicked', self.preset_clicked)
+            flowbox.add(button)
 
     # Event handlers
     def about_clicked(self, button):

@@ -59,7 +59,7 @@ delete_dir "/etc/lyrebird/" 1
 delete_dir "$HOME/.local/share/lyrebird/" 0
 delete_file "$HOME/.local/bin/lyrebird" 0
 
-delete_dir "$HOME/.config/lyrebird/" 1
+delete_dir "$HOME/.config/lyrebird/" 0
 
 delete_file "/usr/local/share/applications/Lyrebird.desktop" 1
 delete_file "$HOME/.local/share/applications/Lyrebird.desktop" 0
