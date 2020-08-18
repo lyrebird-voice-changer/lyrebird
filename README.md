@@ -1,4 +1,5 @@
 # Lyrebird
+
 Simple and powerful voice changer for Linux, written in GTK 3.
 
 [Discord](https://discord.gg/9K7HfH) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
@@ -6,9 +7,11 @@ Simple and powerful voice changer for Linux, written in GTK 3.
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/chxrlt/lyrebird/master/preview.png)
 
 # Why?
+
 I decided to write this as a tool for myself, partly for fun and partly because I hate my own voice and since there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
 
 # Features
+
 - Built in effects for accurate male and female voices
 - Ability to create and load custom presets
 - Manual pitch scale for finer adjustment
@@ -16,6 +19,7 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 - A clean and easy to use GUI
 
 # Usage
+
 1. [Download the latest version](https://github.com/chxrlt/lyrebird/archive/v1.0.2.tar.gz) (v1.0.2).
 2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
 3. Run `install.sh` to install dependencies and Lyrebird itself
@@ -25,12 +29,14 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 7. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
 
 ## Changing using `pavucontrol`
+
 If an app doesn't support live input changing then it can be done with `pavucontrol`. Head to the "Recording" tab and change the input using the drop down next to the application name.
 
 ### I can't?
+
 For some apps on some distros (like Ubuntu) changing the input won't work. To fix this you need to create a file at `~/.alsoftrc` and add the following contents:
 
-```
+```ini
 drivers = alsa,pulse,core,oss
 
 [pulse]
@@ -46,6 +52,7 @@ Firstly make sure you've ran the most up-to-date `install.sh` script. If the iss
 If the issue still sticks around then please open a GitHub issue and include the output of `sudo ls -la /usr/bin/lyrebird/lyrebird`.
 
 # Editing Presets
+
 Presets and config is initally stored in `/etc/lyrebird/` however it can be overriden by copying the files to `~/.config/lyrebird/`.
 
 To edit and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
@@ -69,6 +76,7 @@ volume_boost = "2"
 ```
 
 # Requirements
+
 - Python 3.7+
     - toml
     - python-gobject (check [issue #13](https://github.com/chxrlt/lyrebird/issues/13) if having issues)

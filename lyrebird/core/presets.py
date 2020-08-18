@@ -49,4 +49,3 @@ def load_presets():
             presets.append(preset)
 
     return presets
-
