@@ -2,13 +2,11 @@
 # Lyrebird installer script. Copies the source code to Python path
 # and copies the desktop file to $PREFIX/share/applications.
 
-[ "$(id -u)" != 0 ] && { echo "The installer must be run as root." ; exit 1 ; }
-
-INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
-CONFIG_PATH="/etc/lyrebird"
-
-if [[ $EUID -ne 0 ]]; then
-    INSTALL_PREFIX="$HOME/.local"
+if [[ $EUID -eq 0 ]]; then
+    INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
+    CONFIG_PATH="/etc/lyrebird"
+else
+    INSTALL_PREFIX="${INSTALL_PREFIX:-$HOME/.local}"
     CONFIG_PATH="$HOME/.config/lyrebird"
 fi
 
@@ -17,6 +15,11 @@ SHARE_PATH="$INSTALL_PREFIX/share/lyrebird"
 DESKTOP_PATH="$INSTALL_PREFIX/share/applications/"
 PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')
 PYTHON_PATH="$INSTALL_PREFIX/lib/python$PYTHON_VERSION/site-packages"
+
+if [[ $PYTHON_VERSION -lt 3.7 ]]; then
+    echo "Python version $PYTHON_VERSION is not supported, Python version 3.7 or greater required" >&2
+    exit 1
+fi
 
 # Required pip3 modules space separated
 REQUIRED_PIP_MODULES="toml"
