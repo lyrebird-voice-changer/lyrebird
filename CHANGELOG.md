@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Volume boost effects
 - Window title name
+- Distribution specific packages
+- New installer and uninstaller scripts
 
 ### Changed
 
 - Installer scripts no longer requires bash or sudo
 - Handles subprocess better and doesn't kill all SoX instances upon changing preset/closing
+- `~/.config/lyrebird` is the only directory for config/presets (`/etc/lyrebird/` no longer used and should be migrated)
+- Lyrebird will now automatically create missing config/preset files
 
 ## [v1.0.2] - 2020/08/13
 
