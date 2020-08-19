@@ -34,8 +34,7 @@ class MainWindow(Gtk.Window):
         headerbar.set_show_close_button(True)
         headerbar.props.title = 'Lyrebird Voice Changer'
 
-        about_btn = Gtk.Button()
-        about_btn.props.image = Gtk.Button.new_from_icon_name('help-about-symbolic', Gtk.IconSize.BUTTON)
+        about_btn = Gtk.Button.new_from_icon_name('help-about-symbolic', Gtk.IconSize.BUTTON);
         about_btn.connect('clicked', self.about_clicked)
         headerbar.pack_start(about_btn)
 
@@ -143,9 +142,9 @@ class MainWindow(Gtk.Window):
                 'pacmd load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor'\
                     .split(' ')
             )
-            
+
             print(f'Loaded null output sink ({null_sink}), and remap sink ({remap_sink})')
-            
+
             subprocess.check_call(
                 'pacmd update-sink-proplist Lyrebird-Output device.description="Lyrebird Output"'\
                     .split(' ')
@@ -154,13 +153,13 @@ class MainWindow(Gtk.Window):
                 'pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'\
                     .split(' ')
             )
-            
+
 
             state.sink = null_sink
 
             # Kill the sox process
             self.terminate_sox()
-            
+
             # Use the default preset, which is "Man" if the loaded preset is not found.
             default_preset = state.loaded_presets[0]
 
@@ -195,7 +194,7 @@ class MainWindow(Gtk.Window):
         if state.current_preset is not None:
             # Kill the sox process
             self.terminate_sox()
-            
+
             if not state.current_preset.override_pitch:
                 # Multiply the pitch shift scale value by the multiplier and feed it to sox
                 command = utils.build_sox_command(

@@ -4,8 +4,8 @@
 
 VERSION="1.1"
 
-VERBOSE=1
-DRYRUN=0
+VERBOSE=${VERBOSE:-1}
+DRYRUN=${DRYRUN:-0}
 
 # Initial setup
 
@@ -31,10 +31,11 @@ if [ "$(id -u)" -eq 0 ]; then
 else
     INSTALL_PREFIX="${INSTALL_PREFIX:-$HOME/.local}"
 fi
+verbose_echo "Installing Lyrebird to prefix: ${INSTALL_PREFIX}"
 
 BIN_PATH="$INSTALL_PREFIX/bin"
 SHARE_PATH="$INSTALL_PREFIX/share/lyrebird"
-DESKTOP_PATH="$INSTALL_PREFIX/share/applications/"
+DESKTOP_PATH="$INSTALL_PREFIX/share/applications"
 
 python_version_check() {
     PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')

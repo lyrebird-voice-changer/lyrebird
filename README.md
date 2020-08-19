@@ -47,9 +47,9 @@ allow-moves=yes
 
 ### `ModuleNotFoundError: No module named 'lyrebird.mainwindow'`
 
-Firstly make sure you've ran the most up-to-date `install.sh` script. If the issue still persists then this is probably a permissions issue, running `sudo chmod -R 755 /usr/bin/lyrebird /etc/lyrebird` should fix this.
+Firstly make sure you've ran the most up-to-date `install.sh` script. If the issue still persists then this is probably a permissions issue, running `sudo chmod -R 755 /usr/local/share/lyrebird /etc/lyrebird` should fix this.
 
-If the issue still sticks around then please open a GitHub issue and include the output of `sudo ls -la /usr/bin/lyrebird/lyrebird`.
+If the issue still sticks around then please open a GitHub issue and include the output of `id -u; which lyrebird; sudo ls -lAn /usr/local/share/lyrebird; sudo ls -lAn ~/.local/share/lyrebird`.
 
 # Editing Presets
 
