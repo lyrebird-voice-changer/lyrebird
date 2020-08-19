@@ -42,6 +42,18 @@ class MainWindow(Gtk.Window):
         self.set_title('Lyrebird')
         self.set_titlebar(headerbar)
 
+        # Set the icon
+        self.set_icon_from_file('icon.png')
+
+        # Create the lock file to ensure only one instance of Lyrebird is running at once
+        lock_file = utils.place_lock()
+        if lock_file is None:
+            self.show_error_message("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
+            exit(1)
+        else:
+            self.lock_file = lock_file
+
+        # Setup for handling SoX process
         self.sox_process = None
 
         # Unload the null sink module if there is one from last time.
@@ -52,12 +64,24 @@ class MainWindow(Gtk.Window):
         # Load the configuration file
         state.config = config.load_config()
 
-        # Set the icon
-        self.set_icon_from_file('icon.png')
-
         # Build the UI
         self.build_ui()
 
+    def show_error_message(self, title, msg):
+        '''
+        Create an error message dialog with title and string message.
+        '''
+        dialog = Gtk.MessageDialog(
+            parent         = self,
+            type           = Gtk.MessageType.ERROR,
+            buttons        = Gtk.ButtonsType.OK,
+            message_format = msg)
+        dialog.set_transient_for(self)
+        dialog.set_title(title)
+
+        dialog.show()
+        dialog.run()
+        dialog.destroy()
 
     def build_ui(self):
         self.vbox = Gtk.VBox()
@@ -243,5 +267,7 @@ class MainWindow(Gtk.Window):
 
     def close(self, *args):
         self.terminate_sox()
+        self.lock_file.close()
+        utils.destroy_lock()
         utils.unload_pa_modules(check_state=False)
         Gtk.main_quit()

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Window title name
 - Distribution specific packages
 - New installer and uninstaller scripts
+- Only one instance of Lyrebird can be ran at a time
 
 ### Changed
 

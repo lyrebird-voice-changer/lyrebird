@@ -2,6 +2,9 @@ import subprocess
 import lyrebird.core.state as state
 import lyrebird.core.config as config
 import sys
+import fcntl
+
+from pathlib import Path
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -73,3 +76,26 @@ def show_error_message(msg, parent, title):
     dialog.run()
     dialog.destroy()
     sys.exit(1)
+
+lock_file_path = Path(Path.home() / '.lyrebird.lock')
+def place_lock():
+    '''
+    Places a lockfile file in the user's home directory to prevent
+    two instances of Lyrebird running at once.
+
+    Returns lock file to be closed before application close, if
+    `None` returned then lock failed and another instance of
+    Lyrebird is most likely running.
+    '''
+    lock_file = open(lock_file_path, 'w')
+    try:
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except:
+        return None
+    return lock_file
+
+def destroy_lock():
+    '''
+    Destroy the lock file. Should close lock file before running.
+    '''
+    lock_file_path.unlink(missing_ok=True)
