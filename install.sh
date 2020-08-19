@@ -4,8 +4,8 @@
 
 VERSION="1.1"
 
-VERBOSE=1
-DRYRUN=0
+VERBOSE=${VERBOSE:-1}
+DRYRUN=${DRYRUN:-0}
 
 # Initial setup
 

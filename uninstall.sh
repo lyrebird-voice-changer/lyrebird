@@ -2,8 +2,8 @@
 # Lyrebird installer script. If running as root then will install at /usr/local/{bin,share},
 # otherwise will install at ~/.local/{bin,share}.
 
-VERBOSE=0
-DRYRUN=0
+VERBOSE=${VERBOSE:-0}
+DRYRUN=${DRYRUN:-0}
 
 # Initial setup
 
