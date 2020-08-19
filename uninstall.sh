@@ -26,7 +26,7 @@ verbose_echo() {
 
 delete_file() {
     if [ -f "$1" ]; then
-        if [ $2 -eq 1 ] && [ "$(id -u)" -ne 0 ]; then
+        if [ "$(stat -c '%u' $1)" -ne "$(id -u)" ]; then
             warning_echo "Cannot delete without root access: $1"
             return
         fi
@@ -39,7 +39,7 @@ delete_file() {
 
 delete_dir() {
     if [ -d "$1" ]; then
-        if [ $2 -eq 1 ] && [ "$(id -u)" -ne 0 ]; then
+        if [ "$(stat -c '%u' $1)" -ne "$(id -u)" ]; then
             warning_echo "Cannot delete without root access: $1"
             return
         fi
@@ -50,16 +50,19 @@ delete_dir() {
     fi
 }
 
-delete_dir "/usr/local/bin/lyrebird/" 1
-delete_dir "/usr/local/share/lyrebird/" 1
-delete_file "/usr/local/bin/lyrebird" 1
+if [ "$(id -u)" -eq 0 ]; then
+    INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
+else
+    INSTALL_PREFIX="${INSTALL_PREFIX:-$HOME/.local}"
+fi
+verbose_echo "Uninstalling Lyrebird from prefix: ${INSTALL_PREFIX}"
 
-delete_dir "/etc/lyrebird/" 1
+delete_dir "$INSTALL_PREFIX/bin/lyrebird/"
+delete_dir "$INSTALL_PREFIX/share/lyrebird/"
+delete_file "$INSTALL_PREFIX/bin/lyrebird"
 
-delete_dir "$HOME/.local/share/lyrebird/" 0
-delete_file "$HOME/.local/bin/lyrebird" 0
+delete_dir "/etc/lyrebird/"
 
-delete_dir "$HOME/.config/lyrebird/" 0
+delete_dir "$HOME/.config/lyrebird/"
 
-delete_file "/usr/local/share/applications/Lyrebird.desktop" 1
-delete_file "$HOME/.local/share/applications/Lyrebird.desktop" 0
+delete_file "$INSTALL_PREFIX/share/applications/Lyrebird.desktop"
