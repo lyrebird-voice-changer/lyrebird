@@ -6,7 +6,7 @@ from lyrebird.core.utils import key_or_default
 import lyrebird.core.config as config
 
 class Preset:
-    def __init__(self, 
+    def __init__(self,
                 name,
                 pitch_value,
                 downsample_amount,
