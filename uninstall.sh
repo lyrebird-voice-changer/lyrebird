@@ -66,3 +66,4 @@ delete_dir "/etc/lyrebird/"
 delete_dir "$HOME/.config/lyrebird/"
 
 delete_file "$INSTALL_PREFIX/share/applications/Lyrebird.desktop"
+delete_file "$INSTALL_PREFIX/share/applications/lyrebird.desktop"

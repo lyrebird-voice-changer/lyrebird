@@ -2,8 +2,8 @@ import toml
 import pathlib
 from pathlib import Path
 
-from lyrebird.core.utils import key_or_default
-import lyrebird.core.config as config
+from app.core.utils import key_or_default
+import app.core.config as config
 
 class Preset:
     def __init__(self,

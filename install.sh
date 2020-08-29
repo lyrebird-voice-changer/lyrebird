@@ -75,6 +75,7 @@ remove_deprecated_install() {
 remove_deprecated_install "/usr/local/bin/lyrebird/" 1
 if [ "$(id -u)" -ne 0 ]; then
     remove_deprecated_install "/usr/local/share/applications/Lyrebird.desktop" 1
+    remove_deprecated_install "/usr/local/share/applications/lyrebird.desktop" 1
 fi
 
 if [ -d "/etc/lyrebird/" ]; then
@@ -117,8 +118,8 @@ install_python_modules() {
 }
 
 install_binary_source() {
-    verbose_echo "Copying lyrebird/ to: $SHARE_PATH"
-    if [ $DRYRUN != 1 ]; then cp -rf lyrebird "$SHARE_PATH"; fi
+    verbose_echo "Copying app/ to: $SHARE_PATH"
+    if [ $DRYRUN != 1 ]; then cp -rf app "$SHARE_PATH"; fi
 
     verbose_echo "Copying icon.png to: $SHARE_PATH"
     if [ $DRYRUN != 1 ]; then cp icon.png "$SHARE_PATH"; fi
@@ -126,19 +127,19 @@ install_binary_source() {
     verbose_echo "Copying app.py to: $SHARE_PATH"
     if [ $DRYRUN != 1 ]; then cp app.py "$SHARE_PATH"; fi
 
-    verbose_echo "Copying entrypoint.sh (lyrebird) to: $BIN_PATH"
-    if [ $DRYRUN != 1 ]; then cp entrypoint.sh "$BIN_PATH/lyrebird"; fi
+    verbose_echo "Copying lyrebird to: $BIN_PATH"
+    if [ $DRYRUN != 1 ]; then cp lyrebird "$BIN_PATH/lyrebird"; fi
 
     verbose_echo "Setting permissions 755 recursively for: $SHARE_PATH"
     if [ $DRYRUN != 1 ]; then chmod -R 755 "$SHARE_PATH"; fi
 }
 
 install_desktop() {
-    verbose_echo "Copying Lyrebird.desktop to: $DESKTOP_PATH"
-    if [ $DRYRUN != 1 ]; then BIN_PATH=$BIN_PATH SHARE_PATH=$SHARE_PATH envsubst < Lyrebird.desktop > $DESKTOP_PATH/Lyrebird.desktop; fi
+    verbose_echo "Copying lyrebird.desktop to: $DESKTOP_PATH"
+    if [ $DRYRUN != 1 ]; then BIN_PATH=$BIN_PATH SHARE_PATH=$SHARE_PATH envsubst < lyrebird.desktop > $DESKTOP_PATH/lyrebird.desktop; fi
 
-    verbose_echo "Setting permission 644 for: $DESKTOP_PATH/Lyrebird.desktop"
-    if [ $DRYRUN != 1 ]; then chmod -R 644 "$DESKTOP_PATH/Lyrebird.desktop"; fi
+    verbose_echo "Setting permission 644 for: $DESKTOP_PATH/lyrebird.desktop"
+    if [ $DRYRUN != 1 ]; then chmod -R 644 "$DESKTOP_PATH/lyrebird.desktop"; fi
 }
 
 verbose_space() { if [ $VERBOSE = 1 ]; then echo; fi }

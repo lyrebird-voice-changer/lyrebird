@@ -1,6 +1,6 @@
 import subprocess
-import lyrebird.core.state as state
-import lyrebird.core.config as config
+import app.core.state as state
+import app.core.config as config
 import sys
 import fcntl
 
