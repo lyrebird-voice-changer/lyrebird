@@ -18,15 +18,29 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 - Creates its own temporary virtual input device
 - A clean and easy to use GUI
 
-# Usage
+# Install
 
-1. [Download the latest version](https://github.com/chxrlt/lyrebird/archive/v1.0.2.tar.gz) (v1.0.2).
+## Distro Packages
+
+Check the [releases page](https://github.com/chxrlt/lyrebird/releases) to find a package for your distro.
+
+- [x] Ubuntu/Debian
+- [x] Arch
+
+## Manually
+
+If a package for your distro isn't provided above then you can use the provided installer script:
+
+1. Download the latest `tar.gz` from the [releases page](https://github.com/chxrlt/lyrebird/releases) and extract it
 2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
 3. Run `install.sh` to install dependencies and Lyrebird itself
 4. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
-5. Select a preset or set a custom pitch and flip the switch
-6. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
-7. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
+
+# Usage
+
+1. Select a preset or set a custom pitch and flip the switch
+2. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
+3. Ignore any applications that ask if you want to use "Lyrebird Output" (e.g. Discord), this is used internally and isn't necessary to use Lyrebird
 
 ## Changing using `pavucontrol`
 
