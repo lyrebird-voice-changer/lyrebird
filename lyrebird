@@ -2,7 +2,7 @@
 
 DIR="$(dirname $0)"
 # If not in dev environment then set entry point to share location
-if [ ! -f "$DIR/lyrebird/" ]; then
+if [ ! -d "$DIR/app/" ]; then
     cd "$DIR/../share/lyrebird"
 fi
 exec python3 -B app.py

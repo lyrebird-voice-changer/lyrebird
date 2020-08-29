@@ -77,7 +77,7 @@ def show_error_message(msg, parent, title):
     dialog.destroy()
     sys.exit(1)
 
-lock_file_path = Path(Path.home() / '.lyrebird.lock')
+lock_file_path = Path(Path('/tmp') / 'lyrebird.lock')
 def place_lock():
     '''
     Places a lockfile file in the user's home directory to prevent
@@ -98,4 +98,5 @@ def destroy_lock():
     '''
     Destroy the lock file. Should close lock file before running.
     '''
-    lock_file_path.unlink(missing_ok=True)
+    if lock_file_path.exists():
+        lock_file_path.unlink()

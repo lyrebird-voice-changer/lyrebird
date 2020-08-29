@@ -7,12 +7,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # Core imports
-import lyrebird.core.presets as presets
-import lyrebird.core.state as state
-import lyrebird.core.config as config
-import lyrebird.core.utils as utils
+import app.core.presets as presets
+import app.core.state as state
+import app.core.config as config
+import app.core.utils as utils
 
-from lyrebird.core.presets import Preset
+from app.core.presets import Preset
 
 # Multiplier for pitch shifting
 sox_multiplier = 100
