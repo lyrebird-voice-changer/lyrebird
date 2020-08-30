@@ -1,5 +1,5 @@
 TARGET = lyrebird
-LIBS =
+LIBS = -lpulse
 CC = gcc
 CFLAGS = -g -Wall
 
