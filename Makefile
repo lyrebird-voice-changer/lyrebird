@@ -1,9 +1,9 @@
 TARGET = lyrebird
-LIBS = -lpulse
+LIBS = -lpulse -lpulse-simple -pthread -lrubberband
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall $(pkg-config --cflags libpulse)
 
-OBJS = lyrebird.o
+OBJS = lyrebird.o pulse.o rubberband.o
 
 all: $(TARGET)
 
@@ -11,7 +11,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LIBS) -o $(TARGET)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) $(LIBS) -c $<
 
 run: all
 	./$(TARGET)

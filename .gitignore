@@ -52,3 +52,7 @@ Mkfile.old
 dkms.conf
 
 lyrebird
+.vscode
+
+*.raw
+*.wav
