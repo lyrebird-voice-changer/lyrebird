@@ -24,8 +24,8 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 
 Check the [releases page](https://github.com/chxrlt/lyrebird/releases) to find a package for your distro.
 
-- [x] Ubuntu/Debian
-- [x] Arch
+- [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/chxrlt/lyrebird/releases))
+- [x] Arch (AUR package `lyrebird`)
 
 ## Manually
 
