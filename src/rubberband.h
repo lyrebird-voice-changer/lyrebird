@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <rubberband/rubberband-c.h>
 
-void lyrebird_rubberband_setup();
+RubberBandState lyrebird_rubberband_setup();
+void lyrebird_rubberband_stop(RubberBandState state);
 
 #endif

@@ -9,7 +9,7 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
-#define PULSE_BUFFERSIZE 32
+#define PULSE_BUFFERSIZE 2046
 
 int lyrebird_pulse_start();
 int lyrebird_pulse_stop();
