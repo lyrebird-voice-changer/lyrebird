@@ -8,4 +8,4 @@ Icon=${SHARE_PATH}/icon.png
 Exec=${BIN_PATH}/lyrebird
 Path=${SHARE_PATH}/
 Terminal=false
-Categories=Audio;
+Categories=AudioVideo;Audio;
