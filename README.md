@@ -26,6 +26,7 @@ Check the [releases page](https://github.com/chxrlt/lyrebird/releases) to find a
 
 - [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/chxrlt/lyrebird/releases))
 - [x] Arch (AUR package `lyrebird`)
+- [x] Gentoo (ebuild in the [edgets overlay](https://github.com/BlueManCZ/edgets/tree/master/media-sound/lyrebird))
 
 ## Manually
 
