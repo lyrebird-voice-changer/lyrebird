@@ -2,7 +2,7 @@
 
 Simple and powerful voice changer for Linux, written in GTK 3.
 
-[Discord](https://discord.gg/9K7HfH) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
+[Discord](https://discord.gg/mvCSwYVe5t) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/chxrlt/lyrebird/master/preview.png)
 
