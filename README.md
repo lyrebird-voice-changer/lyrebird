@@ -27,6 +27,12 @@ Check the [releases page](https://github.com/chxrlt/lyrebird/releases) to find a
 - [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/chxrlt/lyrebird/releases))
 - [x] Arch (AUR package `lyrebird`)
 
+### Community
+
+These packages are provided by the community and are not maintained by Lyrebird developers.
+
+- [x] Gentoo (ebuild in the [edgets overlay](https://github.com/BlueManCZ/edgets/tree/master/media-sound/lyrebird))
+
 ## Manually
 
 If a package for your distro isn't provided above then you can use the provided installer script:
