@@ -20,6 +20,10 @@ void sigint_handler(int signum) {
     real_time_loop_active = 0;
     lyrebird_pulse_stop();
     lyrebird_rubberband_stop(testing_rb_state);
+    
+    if (lyrebird_pulse_unload_sinks() != 0) {
+        printf("WARNING: May have failed to unload PulseAudio modules\n");
+    }
 }
 
 /**
@@ -38,9 +42,14 @@ int main() {
 
     signal(SIGINT, sigint_handler);
 
+    if (lyrebird_pulse_create_null_sink() != 0) {
+        printf("ERROR: Failed to create null sinks\n");
+        return 1;
+    }
+
     // Temporary RubberBand state struct for testing
     testing_rb_state = lyrebird_rubberband_setup(44100, 1);
-    rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(2));
+    rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(4));
 
     // Start Pulse
     lyrebird_pulse_start();
@@ -51,7 +60,7 @@ int main() {
         // Find out how many samples RubberBand wants and pull that many from Pulse, in
         // reality this won't work in reality since pulling any samples over 32 makes
         // inaudible sounds
-            unsigned int samples_required = rubberband_get_samples_required(testing_rb_state);
+        unsigned int samples_required = rubberband_get_samples_required(testing_rb_state);
 
         /*int pulse_samples_recv = */lyrebird_pulse_read(buffer, samples_required);
 
