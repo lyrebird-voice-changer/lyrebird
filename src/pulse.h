@@ -10,13 +10,7 @@
 #include <pulse/error.h>
 #include <stdlib.h>
 
-#define PULSE_BUFFERSIZE 2046
-
 int lyrebird_pulse_create_null_sink();
 int lyrebird_pulse_unload_sinks();
-
-int lyrebird_pulse_start();
-int lyrebird_pulse_stop();
-int lyrebird_pulse_read(int16_t *buf, int sample_num);
 
 #endif
