@@ -44,7 +44,7 @@ static void pulseaudio_state_cb(pa_context *context, void *userdata) {
       printf("failed / didn't catch the state code\n");
       if ((err = pa_context_errno(context)) != 0) {
         if ((strerr = pa_strerror(err)) == NULL)
-					printf("Unknown error\n");
+          printf("Unknown error\n");
 
         printf("Error: %s\n", strerr);
       }
@@ -54,42 +54,42 @@ static void pulseaudio_state_cb(pa_context *context, void *userdata) {
 static pa_context *context;
 int main() {
 
-		// glib main loop
+  // glib main loop
 
-		GMainLoop *loop = NULL;
-		loop = g_main_loop_new(NULL, 0);
+  GMainLoop *loop = NULL;
+  loop = g_main_loop_new(NULL, 0);
 
-		// pulse setup
+  // pulse setup
 
-    if (lyrebird_pulse_create_null_sink() != 0) {
-        printf("ERROR: Failed to create null sinks\n");
-        return 1;
-    }
+  if (lyrebird_pulse_create_null_sink() != 0) {
+    printf("ERROR: Failed to create null sinks\n");
+    return 1;
+  }
 
-    pa_glib_mainloop *mainloop = NULL;
-    pa_mainloop_api *mainloop_api;
+  pa_glib_mainloop *mainloop = NULL;
+  pa_mainloop_api *mainloop_api;
 
-    if ((mainloop = pa_glib_mainloop_new(NULL)) == NULL) {
-        printf("ERROR: couldn't create glib mainloop\n");
-        return 1;
-    }
+  if ((mainloop = pa_glib_mainloop_new(NULL)) == NULL) {
+    printf("ERROR: couldn't create glib mainloop\n");
+    return 1;
+  }
 
-    mainloop_api = pa_glib_mainloop_get_api(mainloop);
+  mainloop_api = pa_glib_mainloop_get_api(mainloop);
 
-    if (pa_signal_init(mainloop_api) < 0) {
-        printf("ERROR: failed to init pa signal\n");
-        return 1;
-    }
+  if (pa_signal_init(mainloop_api) < 0) {
+    printf("ERROR: failed to init pa signal\n");
+    return 1;
+  }
 
-    context = pa_context_new(mainloop_api, "lyrebird-context");
-    pa_context_set_state_callback(context, pulseaudio_state_cb, NULL);
+  context = pa_context_new(mainloop_api, "lyrebird-context");
+  pa_context_set_state_callback(context, pulseaudio_state_cb, NULL);
 
-		int context_status;
-    if ((context_status = pa_context_connect(context, "default Pulse Audio", 0, NULL)) != 0) {
-			printf("context connection failure: %d\n", context_status);
-		}
+  int context_status;
+  if ((context_status = pa_context_connect(context, "default Pulse Audio", 0, NULL)) != 0) {
+    printf("context connection failure: %d\n", context_status);
+  }
 
-		g_main_loop_run(loop);
+  g_main_loop_run(loop);
 
-    return 0;
+  return 0;
 }
