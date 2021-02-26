@@ -104,3 +104,12 @@ volume_boost = "2"
 - SoX
     - libsox-fmt-pulse (some distros may already bundle with SoX)
 - PulseAudio
+- More versatility and options down the road
+
+# Donations
+
+Lyrebird is free, open-source software - there is no expectation to pay any amount of money for Lyrebird. However, if you would like to support development we have a Bitcoin address: `bc1qp62nswu34jpdtzu82ng04k0tx02fdxjfmjujz2`. The funds are split between [charpointer](https://github.com/charpointer) and [harrego](https://github.com/harrego), the two lead maintainers for Lyrebird.
+
+# v2, the C rewrite
+
+Lyrebird v2 is currently being worked on in branch [c](https://github.com/charpointer/lyrebird/tree/c). If you are a C developer familiar or willing to learn the Glib API, please come and join us make Lyrebird even better.
