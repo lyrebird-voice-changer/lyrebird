@@ -85,7 +85,7 @@ int main() {
   pa_context_set_state_callback(context, pulseaudio_state_cb, NULL);
 
   int context_status;
-  if ((context_status = pa_context_connect(context, "default Pulse Audio", 0, NULL)) != 0) {
+  if ((context_status = pa_context_connect(context, NULL, 0, NULL)) != 0) {
     printf("context connection failure: %d\n", context_status);
   }
 
