@@ -11,7 +11,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LIBS) -o $(TARGET)
 
 %src/.o: src/%.c
-	$(CC) $(CFLAGS) $(LIBS) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 run: all
 	./$(TARGET)
