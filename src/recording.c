@@ -9,9 +9,9 @@ void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
   }
 
   while (pa_stream_readable_size(stream) > 0) {
-    const void *data;
+    void *data;
     size_t length;
-    if (pa_stream_peek(stream, &data, &length) < 0) {
+    if (pa_stream_peek(stream, (const void**)&data, &length) < 0) {
       int err;
       if ((err = pa_context_errno(pa_stream_get_context(stream))) != 0) {
         const char *strerr;
@@ -28,6 +28,25 @@ void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
 
     if (data == NULL) {
       printf("[super debug] recording data is null");
+    }
+
+    size_t max_writable_size = pa_stream_writable_size(stream);
+    size_t data_len = fmin(max_writable_size, length);
+    if (data_len != length) {
+      printf("[warning] mismatch between data buffer and max write len: (max) %ld vs (buffer) %ld\n", max_writable_size, data_len);
+    }
+
+    lyrebird_internal_t *lyrebird_data;
+    if ((lyrebird_data = (lyrebird_internal_t *)userdata) == NULL) {
+      printf("[error] lyrebird user data not available to recording callback, exiting\n");
+      exit(1);
+    }
+
+    pa_stream *playback_stream = lyrebird_data->playback_stream;
+  
+    if (pa_stream_write(playback_stream, data, data_len, NULL, 0, PA_SEEK_RELATIVE) != 0) {
+      printf("[error] failed to write to playback stream, exiting\n");
+      exit(1);
     }
 
     pa_stream_drop(stream);
@@ -69,7 +88,7 @@ static void record_stream_state_cb(pa_stream *stream, void *userdata) {
   }
 }
 
-int lyrebird_pulseaudio_record_stream_setup(lyrebird_internal_t *data) {
+int lyrebird_pulse_record_stream_setup(lyrebird_internal_t *data) {
   pa_stream *stream;
 
   static const pa_sample_spec pulse_spec = {
@@ -79,6 +98,7 @@ int lyrebird_pulseaudio_record_stream_setup(lyrebird_internal_t *data) {
   };
 
   stream = pa_stream_new(data->pa_context, "Lyrebird Recording", &pulse_spec, NULL);
+  data->record_stream = stream;
 
   if (stream == NULL) {
     printf("[error] failed to create recording stream\n");
@@ -86,7 +106,7 @@ int lyrebird_pulseaudio_record_stream_setup(lyrebird_internal_t *data) {
   }
 
   pa_stream_set_state_callback(stream, record_stream_state_cb, data);
-  pa_stream_set_read_callback(stream, record_stream_read_cb, NULL);
+  pa_stream_set_read_callback(stream, record_stream_read_cb, data);
 
   pa_buffer_attr buffer_attr;
   memset(&buffer_attr, 0, sizeof(buffer_attr));

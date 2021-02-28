@@ -16,6 +16,7 @@
 
 #include "lyrebird.h"
 #include "recording.h"
+#include "playback.h"
 
 int lyrebird_pulse_create_null_sink();
 int lyrebird_pulse_unload_sinks();

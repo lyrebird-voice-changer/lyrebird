@@ -14,6 +14,9 @@
 
 struct lyrebird_internal_t {
   pa_context *pa_context;
+
+	pa_stream *record_stream;
+	pa_stream *playback_stream;
 } typedef lyrebird_internal_t;
 
 #include "pulse.h"

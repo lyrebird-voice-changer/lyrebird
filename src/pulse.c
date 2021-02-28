@@ -53,10 +53,15 @@ static void pulse_context_state_cb(pa_context *context, void *userdata) {
     case PA_CONTEXT_READY:
       printf("[debug] pulseaudio context ready\n");
 
-      if (lyrebird_pulseaudio_record_stream_setup(data) != 0) {
+      if (lyrebird_pulse_record_stream_setup(data) != 0) {
         printf("[error] could not setup recording stream, exiting\n");
         exit(1);
       }
+
+			if (lyrebird_pulse_playback_stream_setup(data) != 0)	{
+				printf("[errpr] could not setup playback stream, exiting\n");
+				exit(1);
+			}
       break;
     case PA_CONTEXT_TERMINATED:
       printf("[error] pulseaudio context terminated, exiting");
