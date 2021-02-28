@@ -2,7 +2,36 @@
 
 void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
   printf("[super debug] read data from recording stream\n");
-  pa_stream_drop(stream);
+
+  if (nbytes <= 0) {
+    printf("[super debug] data from recording stream is empty\n");
+    return;
+  }
+
+  while (pa_stream_readable_size(stream) > 0) {
+    const void *data;
+    size_t length;
+    if (pa_stream_peek(stream, &data, &length) < 0) {
+      int err;
+      if ((err = pa_context_errno(pa_stream_get_context(stream))) != 0) {
+        const char *strerr;
+        if ((strerr = pa_strerror(err)) != NULL) {
+          printf("[error] failed to read record stream: %s, exiting\n", strerr);
+        } else {
+          printf("[error] failed to read record stream, error code %d, exiting\n", err);
+        }
+      } else {
+        printf("[error] failed to read record stream for an unknown reason, exiting\n");
+      }
+      exit(1);
+    }
+
+    if (data == NULL) {
+      printf("[super debug] recording data is null");
+    }
+
+    pa_stream_drop(stream);
+  }
 }
 
 static void record_stream_state_cb(pa_stream *stream, void *userdata) {

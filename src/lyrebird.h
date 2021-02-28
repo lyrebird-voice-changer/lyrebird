@@ -19,5 +19,4 @@ struct lyrebird_internal_t {
 #include "pulse.h"
 #include "rubberband.h"
 
-
 #endif
