@@ -1,5 +1,8 @@
 #include "recording.h"
 
+FILE *fp;
+
+RubberBandState testing_rb_state;
 void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
   printf("[super debug] read data from recording stream\n");
 
@@ -9,7 +12,7 @@ void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
   }
 
   while (pa_stream_readable_size(stream) > 0) {
-    void *data;
+    int16_t *data;
     size_t length;
     if (pa_stream_peek(stream, (const void**)&data, &length) < 0) {
       int err;
@@ -36,6 +39,8 @@ void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
       printf("[warning] mismatch between data buffer and max write len: (max) %ld vs (buffer) %ld\n", max_writable_size, data_len);
     }
 
+    printf("[debug] recorded buffer has a length of %ld\n", data_len);
+
     lyrebird_internal_t *lyrebird_data;
     if ((lyrebird_data = (lyrebird_internal_t *)userdata) == NULL) {
       printf("[error] lyrebird user data not available to recording callback, exiting\n");
@@ -43,10 +48,67 @@ void record_stream_read_cb(pa_stream *stream, size_t nbytes, void *userdata) {
     }
 
     pa_stream *playback_stream = lyrebird_data->playback_stream;
-  
-    if (pa_stream_write(playback_stream, data, data_len, NULL, 0, PA_SEEK_RELATIVE) != 0) {
-      printf("[error] failed to write to playback stream, exiting\n");
-      exit(1);
+
+    // rubber band processing
+
+    int required_samples = rubberband_get_samples_required(testing_rb_state);
+    printf("[debug] rubberband is requesting %d samples\n", required_samples);
+
+    float in_samples_chan1[data_len];
+    memset(in_samples_chan1, 0, data_len);
+    for (unsigned int i = 0; i < data_len; i++) {
+      // Making sure value doesn't equal 0 or exceed/be less than -1.0f/1.0f bounds
+      float value;
+      if (data[i] == 0) {
+        value = 0;
+      } else {
+        // Find float value by dividing by sample rate
+        float calculated = (float)data[i] / 44100.0;
+        if (calculated > 1) {
+          value = 1;
+        } else if (calculated < -1) {
+          value = -1;
+        } else {
+          value = calculated;
+        }
+      }
+      // Write calculated value to buffer
+      in_samples_chan1[i] = value;
+    }
+    // Create final buffer for RubberBand
+    float *in_samples[1] = { in_samples_chan1 };
+
+    // Process data in RubberBand
+
+    rubberband_process(testing_rb_state, (const float* const*)in_samples, data_len, 0);
+
+    // How many frames available to receive from RubberBand
+    int available_frames = rubberband_available(testing_rb_state);
+    printf("[debug] rubberband has %d available frames\n", available_frames);
+    if (available_frames > 0) {
+      // More than 0, read from RubberBand
+      float out_chan1[available_frames];
+      memset(out_chan1, 0, available_frames);
+      float *out[1] = { out_chan1 };
+
+      // Pull samples from RubberBand
+      /*size_t out_samples_size = */rubberband_retrieve(testing_rb_state, out, available_frames);
+
+      int16_t *out_buffer = malloc(available_frames * sizeof(int16_t));
+      for (int i = 0; i < available_frames; i++) {
+        out_buffer[i] = (int16_t)(out[0][i] * 44100);
+      }
+      
+      // analyze with `sox -t raw -b 16 -e signed-integer -r 44100 test.raw test.wav`
+      // NOTE: audio can be glitchy and loud
+      fwrite(out_buffer, sizeof(int16_t), available_frames, fp);
+
+      /*
+      if (pa_stream_write(playback_stream, out_buffer, available_frames, NULL, 0, PA_SEEK_RELATIVE) != 0) {
+        printf("[error] failed to write to playback stream, exiting\n");
+        exit(1);
+      }
+      */
     }
 
     pa_stream_drop(stream);
@@ -88,7 +150,14 @@ static void record_stream_state_cb(pa_stream *stream, void *userdata) {
   }
 }
 
+
 int lyrebird_pulse_record_stream_setup(lyrebird_internal_t *data) {
+  fp = fopen("test.raw", "wb");
+
+  testing_rb_state = lyrebird_rubberband_setup(44100, 1);
+  //rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(4));
+  rubberband_set_max_process_size(testing_rb_state, 2048);
+
   pa_stream *stream;
 
   static const pa_sample_spec pulse_spec = {

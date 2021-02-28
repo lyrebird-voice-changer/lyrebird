@@ -79,7 +79,7 @@ volume of your speakers, it is sometimes VERY BAD AUDIO!
 int main() {
   // Temporary RubberBand state struct for testing
   testing_rb_state = lyrebird_rubberband_setup(44100, 1);
-  rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(4));
+  rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(1));
 
   // Start Pulse
   lyrebird_pulse_start();
@@ -140,9 +140,9 @@ int main() {
 
       int16_t *out_buffer = malloc(available_frames * sizeof(uint16_t));
       for (int i = 0; i < available_frames; i++) {
-        out_buffer[i] = (int16_t)(out[0][i] * 44100);
+        out_buffer[i] = (uint16_t)(out[0][i] * 44100);
       }
-      fwrite(out_buffer, sizeof(int16_t), available_frames, stdout);
+      fwrite(out_buffer, sizeof(uint16_t), available_frames, stdout);
     }
   }
 
