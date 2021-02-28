@@ -10,7 +10,15 @@
 #include <pulse/error.h>
 #include <stdlib.h>
 
+#define LB_PA_SPEC_FORMAT PA_SAMPLE_S16LE
+#define LB_PA_SPEC_RATE 44100
+#define LB_PA_SPEC_CHANNELS 1
+
+#include "lyrebird.h"
+#include "recording.h"
+
 int lyrebird_pulse_create_null_sink();
 int lyrebird_pulse_unload_sinks();
+int lyrebird_pulse_setup(lyrebird_internal_t *data);
 
 #endif
