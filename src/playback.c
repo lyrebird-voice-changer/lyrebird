@@ -55,7 +55,7 @@ int lyrebird_pulse_playback_stream_setup(lyrebird_internal_t *data) {
 
   pa_stream_set_state_callback(stream, playback_stream_state_cb, data);
 
-  int connect_status = pa_stream_connect_playback(stream, NULL, NULL, 0, NULL, NULL);
+  int connect_status = pa_stream_connect_playback(stream, "Lyrebird-C-Output", NULL, 0, NULL, NULL);
   if (connect_status != 0) {
     printf("[error] failed to connect stream to playback\n");
     return 1;

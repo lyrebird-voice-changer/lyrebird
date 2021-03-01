@@ -139,7 +139,7 @@ static void record_stream_state_cb(pa_stream *stream, void *userdata) {
 int lyrebird_pulse_record_stream_setup(lyrebird_internal_t *data) {
   testing_rb_state = lyrebird_rubberband_setup(44100, 1);
   // -5 to 25 (higher number = higher voice)
-  rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(5));
+  rubberband_set_pitch_scale(testing_rb_state, lyrebird_semitones_pitch(data->semitones));
 
   pa_stream *stream;
 
@@ -164,9 +164,9 @@ int lyrebird_pulse_record_stream_setup(lyrebird_internal_t *data) {
 
   pa_buffer_attr buffer_attr;
   memset(&buffer_attr, 0, sizeof(buffer_attr));
-  buffer_attr.maxlength = (uint32_t) 200;
+  buffer_attr.maxlength = (uint32_t) 2000;
   buffer_attr.prebuf = (uint32_t) -1;
-  buffer_attr.fragsize = buffer_attr.tlength = (uint32_t) 200;
+  buffer_attr.fragsize = buffer_attr.tlength = (uint32_t) 2000;
   buffer_attr.minreq = (uint32_t) -1;
 
   int cb_result = pa_stream_connect_record(stream, NULL, &buffer_attr, PA_STREAM_ADJUST_LATENCY);

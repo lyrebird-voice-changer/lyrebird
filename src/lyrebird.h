@@ -13,6 +13,8 @@
 #include <pulse/error.h>
 
 struct lyrebird_internal_t {
+  float semitones;
+
   pa_context *pa_context;
 
 	pa_stream *record_stream;
