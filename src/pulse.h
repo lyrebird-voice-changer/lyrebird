@@ -10,7 +10,7 @@
 #include <pulse/error.h>
 #include <stdlib.h>
 
-#define LB_PA_SPEC_FORMAT PA_SAMPLE_S16LE
+#define LB_PA_SPEC_FORMAT PA_SAMPLE_FLOAT32LE
 #define LB_PA_SPEC_RATE 44100
 #define LB_PA_SPEC_CHANNELS 1
 

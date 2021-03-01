@@ -5,7 +5,7 @@ float lyrebird_semitones_pitch(float semitones) {
 }
 
 RubberBandState lyrebird_rubberband_setup(int samplerate, int channels) {
-  RubberBandOptions options = RubberBandOptionPitchHighQuality | RubberBandOptionFormantPreserved | RubberBandOptionSmoothingOn;
+  RubberBandOptions options = RubberBandOptionPitchHighQuality | RubberBandOptionFormantPreserved | RubberBandOptionSmoothingOn | RubberBandOptionProcessRealTime;
   double initial_timeratio = 1.0;
   double initial_pitchscale = 1.0;
 
