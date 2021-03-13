@@ -1,7 +1,7 @@
 TARGET = lyrebird
-LIBS = -lglib-2.0 -lpulse -lpulse-mainloop-glib -pthread -lrubberband -lm
+LIBS = $(shell pkg-config --libs glib-2.0) -lpulse -lpulse-mainloop-glib -pthread -lrubberband -lm
 CC = gcc
-CFLAGS = -g -Wall -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -D_REENTRANT
+CFLAGS = -g -Wall $(shell pkg-config --cflags glib-2.0) -D_REENTRANT
 
 OBJS = src/lyrebird.o src/pulse.o src/rubberband.o src/recording.o src/playback.o
 
