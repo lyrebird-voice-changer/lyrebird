@@ -5,4 +5,4 @@ DIR="$(dirname $0)"
 if [ ! -d "$DIR/app/" ]; then
     cd "$DIR/../share/lyrebird"
 fi
-exec python3 -B app.py
+exec python3 -Bm app

@@ -11,6 +11,7 @@ import app.core.presets as presets
 import app.core.state as state
 import app.core.config as config
 import app.core.utils as utils
+from app import __version__
 
 from app.core.presets import Preset
 
@@ -148,7 +149,7 @@ class MainWindow(Gtk.Window):
     def about_clicked(self, button):
         about = Gtk.AboutDialog()
         about.set_program_name('Lyrebird Voice Changer')
-        about.set_version("v1.1.0")
+        about.set_version(f"v{__version__}")
         about.set_copyright('(c) Charlotte 2020')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
