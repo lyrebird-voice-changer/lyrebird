@@ -2,9 +2,7 @@
 
 Simple and powerful voice changer for Linux, written in GTK 3.
 
-[Discord](https://discord.gg/mvCSwYVe5t) | [#lyrebird](https://webchat.freenode.net/#lyrebird) (Freenode IRC)
-
-![Lyrebird Screenshot](https://raw.githubusercontent.com/chxrlt/lyrebird/master/preview.png)
+![Lyrebird Screenshot](https://raw.githubusercontent.com/lyrebird-voice-changer/lyrebird/master/preview.png)
 
 # Why?
 
@@ -22,9 +20,9 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 
 ## Distro Packages
 
-Check the [releases page](https://github.com/chxrlt/lyrebird/releases) to find a package for your distro.
+Check the [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases) to find a package for your distro.
 
-- [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/chxrlt/lyrebird/releases))
+- [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases))
 - [x] Arch (AUR package `lyrebird`)
 
 ### Community
@@ -37,7 +35,7 @@ These packages are provided by the community and are not maintained by Lyrebird 
 
 If a package for your distro isn't provided above then you can use the provided installer script:
 
-1. Download the latest `tar.gz` from the [releases page](https://github.com/chxrlt/lyrebird/releases) and extract it
+1. Download the latest `tar.gz` from the [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases) and extract it
 2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
 3. Run `install.sh` to install dependencies and Lyrebird itself
 4. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
@@ -99,7 +97,7 @@ volume_boost = "2"
 
 - Python 3.7+
     - toml
-    - python-gobject (check [issue #13](https://github.com/chxrlt/lyrebird/issues/13) if having issues)
+    - python-gobject (check [issue #13](https://github.com/lyrebird-voice-changer/lyrebird/issues/13) if having issues)
 - pavucontrol
 - SoX
     - libsox-fmt-pulse (some distros may already bundle with SoX)
@@ -108,8 +106,8 @@ volume_boost = "2"
 
 # Donations
 
-Lyrebird is free, open-source software - there is no expectation to pay any amount of money for Lyrebird. However, if you would like to support development we have a Bitcoin address: `bc1qp62nswu34jpdtzu82ng04k0tx02fdxjfmjujz2`. The funds are split between [charpointer](https://github.com/charpointer) and [harrego](https://github.com/harrego), the two lead maintainers for Lyrebird.
+Lyrebird is free, open-source software - there is no expectation to pay any amount of money for Lyrebird. However, if you would like to support development we have a Bitcoin address: `bc1qp62nswu34jpdtzu82ng04k0tx02fdxjfmjujz2`. The funds are split between [charpointer](https://github.com/charpointer) and [harrego](https://github.com/harrego), the two lead maintainers of Lyrebird.
 
 # v2, the C rewrite
 
-Lyrebird v2 is currently being worked on in branch [c](https://github.com/charpointer/lyrebird/tree/c). If you are a C developer familiar or willing to learn the Glib API, please come and join us make Lyrebird even better.
+Lyrebird v2 is currently being worked on in branch [c](https://github.com/lyrebird-voice-changer/lyrebird/tree/c). If you are a C developer familiar or willing to learn the Glib API, please come and join us make Lyrebird even better.
