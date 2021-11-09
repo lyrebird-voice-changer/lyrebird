@@ -59,7 +59,7 @@ class MainWindow(Gtk.Window):
         # Unload the null sink module if there is one from last time.
         # The only reason there would be one already, is if the application was closed without
         # toggling the switch to off (aka a crash was experienced).
-        utils.unload_pa_modules(check_state=False)
+        utils.unload_pa_modules()
 
         # Load the configuration file
         state.config = config.load_config()
