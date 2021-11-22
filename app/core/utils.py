@@ -57,8 +57,8 @@ def unload_pa_modules(check_state=False):
 
     # Unload if we don't care about state, or we do and there is a sink loaded
     if not check_state or state.sink != -1:
-        subprocess.call('pacmd unload-module module-null-sink'.split(" "))
-        subprocess.call('pacmd unload-module module-remap-source'.split(' '))
+        subprocess.call('pactl unload-module module-null-sink'.split(" "))
+        subprocess.call('pactl unload-module module-remap-source'.split(' '))
 
 def show_error_message(msg, parent, title):
     '''
