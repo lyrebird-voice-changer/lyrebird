@@ -1,13 +1,13 @@
 Name:          lyrebird
 Summary:       Simple and powerful voice changer for Linux, written in GTK 3.
-URL:           https://github.com/charpointer/%{name}
+URL:           https://github.com/lyrebird-voice-changer/%{name}
 
 Version:       1.1.0
-Release:       3%{dist}
+Release:       4%{dist}
 License:       MIT
 
-Source0:       https://github.com/charpointer/%{name}/archive/refs/tags/v%{version}.tar.gz
-BuildArch:     x86_64
+Source0:       %{URL}/archive/v%{version}.tar.gz
+BuildArch:     noarch
 
 BuildRequires: gettext
 
@@ -40,6 +40,9 @@ BIN_PATH=%{_bindir} SHARE_PATH=%{_datadir}/%{name} envsubst < %{name}.desktop > 
 %doc README.md CHANGELOG.md
 
 %changelog
+* Fri Jan 28 2022 sT331h0rs3 <sT331h0rs3@gmail.com> - 1.1.0-4
+- Change the GitHub URL and set noarch.
+
 * Sun Apr 04 2021 sT331h0rs3 <sT331h0rs3@gmail.com> - 1.1.0-3
 - Initial RPM packaging for Fedora is done.
 
