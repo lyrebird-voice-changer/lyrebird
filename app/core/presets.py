@@ -123,11 +123,39 @@ override_pitch_slider = false
 volume_boost = "8"
 
 [[presets]]
-name = "C"
+name = "Custom"
 pitch_value = "scale"
 downsample_amount = "none"
 override_pitch_slider = false
-custom_sox_command = "chorus 0.7 0.9 55 0.4 0.25 2 −t"
+
+[[presets]]
+name = "Muffled - thin wall"
+pitch_value = "scale"
+downsample_amount = "none"
+override_pitch_slider = false
+custom_sox_command = "lowpass 400"
+
+[[presets]]
+name = "Muffled - thick wall"
+pitch_value = "scale"
+downsample_amount = "none"
+override_pitch_slider = false
+custom_sox_command = "lowpass 200"
+
+[[presets]]
+name = "Old telephone"
+pitch_value = "scale"
+downsample_amount = "none"
+override_pitch_slider = false
+custom_sox_command = "lowpass 5000 highpass 500"
+
+[[presets]]
+name = "Echo - (large buffer)"
+pitch_value = "scale"
+downsample_amount = "none"
+override_pitch_slider = false
+custom_sox_command = "echos 0.8 0.7 40 0.25 63 0.3"
+
 '''
 
 def create_presets():

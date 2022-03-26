@@ -46,12 +46,12 @@ def build_sox_command(preset, config_object=None, scale_object=None):
 
     if preset.custom_sox_command != None and preset.custom_sox_command != 'none':
         effects.append(preset.custom_sox_command)
-        print(f"custom command section: {preset.custom_sox_command}")
+        #print(f"custom command section: {preset.custom_sox_command}")
         
 
     sox_effects = ' '.join(effects)
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
-    print(command)
+    #print(command)
     return command
 
 def unload_pa_modules(check_state=False):
