@@ -113,7 +113,7 @@ def parse_pactl_info_short(lines):
     split_lines = lines.split("\n")
     for line in split_lines:
         info = line.split("\t")
-        if len(info) <= 1:
+        if len(info) <= 2:
             continue
         
         if info[2] and len(info[2]) > 0:
@@ -123,6 +123,15 @@ def parse_pactl_info_short(lines):
             data.append((info[0], info[1], []))
     return data
     
+def get_sink_name(tuple):
+    print(tuple)
+    if tuple[0] == "sink_name":
+        return tuple[1]
+    elif tuple[0] == "source_name":
+        return tuple[1]
+    else:
+        return None
+
 def unload_pa_modules():
     '''
     Unloads all Lyrebird null sinks.
@@ -130,8 +139,22 @@ def unload_pa_modules():
     pactl_list = subprocess.run(["pactl", "list", "short"], capture_output=True, encoding="utf8")
     stdout = pactl_list.stdout
     modules = parse_pactl_info_short(stdout)
-    lyrebird_modules = []
+    lyrebird_module_ids = []
     for module in modules:
-        is_lyrebird = False
+        if len(module) < 3:
+            continue;
+        if len(module[2]) < 1:
+            continue;
 
-        
+        # print(module)
+        if module[1] == "module-null-sink":
+            sink_name = get_sink_name(module[2][0])
+            if sink_name == "Lyrebird-Output":
+                lyrebird_module_ids.append(module[0])
+        elif module[1] == "module-remap-source":
+            sink_name = get_sink_name(module[2][0])
+            if sink_name == "Lyrebird-Input":
+                lyrebird_module_ids.append(module[0])
+
+    for id in lyrebird_module_ids:
+            subprocess.run(["pactl", "unload-module", str(id)])
