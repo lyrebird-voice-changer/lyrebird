@@ -38,22 +38,19 @@ SHARE_PATH="$INSTALL_PREFIX/share/lyrebird"
 DESKTOP_PATH="$INSTALL_PREFIX/share/applications"
 
 python_version_check() {
-    PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d')
+    PYTHON_VERSION=$(python3 --version | grep -Po '3\.\d+')
 
-    PYTHON_MIN_MAJOR=3
     PYTHON_MIN_MINOR=7
-
-    PYTHON_MAJOR=${PYTHON_VERSION%.*}
     PYTHON_MINOR=${PYTHON_VERSION#*.}
 
     invalid_python() {
         info_echo "Lyrebird requires Python version 3.7 or higher"
     }
 
-    if [ "$PYTHON_MAJOR" -lt "$PYTHON_MIN_MAJOR" ]; then
+    if [ -z $PYTHON_VERSION ]; then
         invalid_python
         exit 1
-    elif [ "$PYTHON_MAJOR" -eq "$PYTHON_MIN_MAJOR" ] && [ "$PYTHON_MINOR" -lt "$PYTHON_MIN_MINOR" ]; then
+    elif [ "$PYTHON_MINOR" -lt "$PYTHON_MIN_MINOR" ]; then
         invalid_python
         exit 1
     fi
