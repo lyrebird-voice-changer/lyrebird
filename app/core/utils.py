@@ -29,8 +29,14 @@ def build_sox_command(preset, config_object=None, ui_values=None):
         if effect_name not in preset.effects:
             effects.append(f'{effect_name} {effect_value}')
 
+    # To fix the error which appear when no effects applied
     sox_effects = ' '.join(effects)
+    if not sox_effects:
+        sox_effects = 'pitch 0'
+
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
+
+    print(command)
 
     return command
 

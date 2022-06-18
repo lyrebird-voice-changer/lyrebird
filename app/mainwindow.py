@@ -67,8 +67,9 @@ class MainWindow(Gtk.Window):
         # To allow switching presets and values before toggling Lyrebird on
         self.activated = False
 
-        # To track all the scales and get the values when needed
+        # To track all the scales and switches and get the values when needed
         self.effects_scales = {}
+        self.effects_switches = {}
 
         # Build the UI
         self.build_ui()
@@ -93,6 +94,11 @@ class MainWindow(Gtk.Window):
         hbox = Gtk.HBox()
         label = Gtk.Label(parameter)
         label.set_halign(Gtk.Align.START)
+        label.set_size_request(100, 25)
+
+        switch = Gtk.Switch()
+        #switch.set_size_request(40, 25)
+        switch.connect('notify::active', self.scale_moved)
 
         # I'm not sure what step and page step does, so I just used the approach that was used
         # for pitch scale as default
@@ -110,9 +116,12 @@ class MainWindow(Gtk.Window):
         scale.set_sensitive(False)
 
         hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(switch, False, False, 20)
+
         hbox.pack_end(scale, True, True, 0)
 
         self.effects_scales[effect_name] = scale
+        self.effects_switches[effect_name] = switch
 
         self.vbox.pack_start(hbox, False, False, 5)
 
@@ -178,9 +187,13 @@ class MainWindow(Gtk.Window):
         self.terminate_sox()
 
         # Gather values from the scales to one dict
-        ui_values = {
-            effect_name: scale.get_value() for effect_name, scale in self.effects_scales.items()
-        }
+        # take only the values of scales where switch is toggled on
+        ui_values = {}
+
+        for effect_name, scale in self.effects_scales.items():
+            if self.effects_switches[effect_name].get_active():
+                ui_values[effect_name] = scale.get_value()
+
         command = utils.build_sox_command(
             state.current_preset,
             config_object=state.config,
@@ -249,7 +262,7 @@ class MainWindow(Gtk.Window):
             utils.unload_pa_modules(check_state=True)
             self.terminate_sox()
 
-    def scale_moved(self, event):
+    def scale_moved(self, event, gparam=None):
         global sox_multiplier
         # Very hacky code, we repeatedly kill sox, grab the new value to pitch shift
         # by, and then restart the process.
