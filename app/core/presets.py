@@ -8,29 +8,21 @@ import app.core.config as config
 class Preset:
     def __init__(self,
                 name,
-                pitch_value,
-                downsample_amount,
-                override_pitch,
-                volume_boost):
+                effects):
         self.name = name
-        self.pitch_value = pitch_value
-        self.downsample_amount = downsample_amount
-        self.override_pitch = override_pitch
-        self.volume_boost = volume_boost
+        self.effects = effects
 
     @staticmethod
     def from_dict(d):
         '''
         Constructs a `Preset` instance from a dictionary item and returns it
         '''
+        name = d.pop('name')
 
         # pylint: disable=bad-continuation
         return Preset(
-                name=d['name'],
-                pitch_value=d['pitch_value'],
-                downsample_amount=key_or_default(key='downsample_amount',  dict=d, default='1'),
-                override_pitch=key_or_default(key='override_pitch_slider', dict=d, default='false'),
-                volume_boost=key_or_default(key='volume_boost', dict=d, default='0')
+                name=name,
+                effects=d
         )
 
 def load_presets():
@@ -62,70 +54,49 @@ PRESETS_CONTENTS = '''
 
 [[presets]]
 name = "Man"
-pitch_value = "-1.5"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [-150]
 
 [[presets]]
 name = "Woman"
-pitch_value = "2.5"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [250]
 
 [[presets]]
 name = "Boy"
-pitch_value = "1.25"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [125]
 
 [[presets]]
 name = "Girl"
-pitch_value = "2.8"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [280]
 
 [[presets]]
 name = "Darth Vader"
-pitch_value = "-6"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [-600]
 
 [[presets]]
 name = "Chipmunk"
-pitch_value = "10.0"
-downsample_amount = "none"
-override_pitch_slider = true
+pitch = [1000]
 
 [[presets]]
 name = "Russian Mic"
-pitch_value = "scale"
-downsample_amount = "8"
-override_pitch_slider = false
-volume_boost = "8"
+downsample = [8]
+vol = ["8dB"]
 
 [[presets]]
 name = "Radio"
-pitch_value = "scale"
-downsample_amount = "6"
-override_pitch_slider = false
-volume_boost = "5"
+downsample = [6]
+vol = ["5dB"]
 
 [[presets]]
 name = "Megaphone"
-pitch_value = "scale"
-downsample_amount = "2"
-override_pitch_slider = false
-volume_boost = "8"
+downsample = [2]
+vol = ["8dB"]
 
 [[presets]]
 name = "Custom"
-pitch_value = "scale"
-downsample_amount = "none"
-override_pitch_slider = false
 '''
 
 def create_presets():
     config.create_config_dir()
-    if not config.presets_path.exists():
+    if not config.presets_path.exists() or True:
         with open(config.presets_path, 'w') as f:
             f.write(PRESETS_CONTENTS)
