@@ -18,15 +18,16 @@ def build_sox_command(preset, config_object=None, ui_values=None):
     '''
     Builds and returns a sox command from a preset object
     '''
-    multiplier = 100
     effects = []
 
     for effect_name, effect_params in preset.effects.items():
         params_str = ' '.join(map(str, effect_params))
         effects.append(f'{effect_name} {params_str}')
 
-    if 'pitch' not in preset.effects:
-        effects.append(f'pitch {ui_values["pitch"] * multiplier}')
+    # Apply scales effects after preset effects only if they are not already applied by preset
+    for effect_name, effect_value in ui_values.items():
+        if effect_name not in preset.effects:
+            effects.append(f'{effect_name} {effect_value}')
 
     sox_effects = ' '.join(effects)
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'

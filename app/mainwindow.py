@@ -64,7 +64,11 @@ class MainWindow(Gtk.Window):
         # Load the configuration file
         state.config = config.load_config()
 
+        # To allow switching presets and values before toggling Lyrebird on
         self.activated = False
+
+        # To track all the scales and get the values when needed
+        self.effects_scales = {}
 
         # Build the UI
         self.build_ui()
@@ -85,13 +89,19 @@ class MainWindow(Gtk.Window):
         dialog.run()
         dialog.destroy()
 
-    def build_parameter_row(self, parameter, effect_name, value_min, value_max):
+    def build_parameter_row(self, parameter, effect_name, value_min, value_max, step=None, page_step=None):
         hbox = Gtk.HBox()
         label = Gtk.Label(parameter)
         label.set_halign(Gtk.Align.START)
 
-        step = (value_max - value_min) // 4
-        adj = Gtk.Adjustment(0, value_min, value_max, step, step * 2, 0)
+        # I'm not sure what step and page step does, so I just used the approach that was used
+        # for pitch scale as default
+        if step is None:
+            step = (value_max - value_min) // 4
+        if page_step is None:
+            page_step = step * 2
+
+        adj = Gtk.Adjustment(0, value_min, value_max, step, page_step, 0)
         scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adj)
         scale.set_valign(Gtk.Align.CENTER)
         scale.connect('value-changed', self.scale_moved)
@@ -102,7 +112,9 @@ class MainWindow(Gtk.Window):
         hbox.pack_start(label, False, False, 0)
         hbox.pack_end(scale, True, True, 0)
 
-        setattr(self, f'{effect_name}_scale', scale)
+        self.effects_scales[effect_name] = scale
+
+        self.vbox.pack_start(hbox, False, False, 5)
 
         return hbox
 
@@ -120,8 +132,14 @@ class MainWindow(Gtk.Window):
         self.hbox_toggle.pack_start(self.toggle_label, False, False, 0)
         self.hbox_toggle.pack_end(self.toggle_switch, False, False, 0)
 
+        self.vbox.pack_start(self.hbox_toggle, False, False, 5)
+
         # Pitch shift scale
-        hbox_pitch = self.build_parameter_row('Pitch Shift ', 'pitch', -10, 10)
+        self.build_parameter_row('Pitch Shift ', 'pitch', -1000, 1000)
+        # Highpass scale
+        self.build_parameter_row('Highpass ', 'highpass', 100, 1000)
+        # Lowpass scale
+        self.build_parameter_row('Lowpass ', 'lowpass', 200, 4000)
 
         # Flow box containing the presets
         self.effects_label = Gtk.Label()
@@ -136,8 +154,6 @@ class MainWindow(Gtk.Window):
         # Create the flow box items
         self.create_flowbox_items(self.flowbox)
 
-        self.vbox.pack_start(self.hbox_toggle, False, False, 5)
-        self.vbox.pack_start(hbox_pitch, False, False, 5)
         self.vbox.pack_start(self.effects_label, False, False, 5)
         self.vbox.pack_end(self.flowbox, True, True, 0)
 
@@ -155,13 +171,15 @@ class MainWindow(Gtk.Window):
             flowbox.add(button)
 
     def restart_sox(self):
+        # No need to start the process if Lyrebird is toggled off
         if not self.activated:
             return
 
         self.terminate_sox()
 
+        # Gather values from the scales to one dict
         ui_values = {
-            'pitch': self.pitch_scale.get_value()
+            effect_name: scale.get_value() for effect_name, scale in self.effects_scales.items()
         }
         command = utils.build_sox_command(
             state.current_preset,
@@ -174,11 +192,12 @@ class MainWindow(Gtk.Window):
     def set_preset(self, preset):
         state.current_preset = preset
 
-        if 'pitch' in preset.effects:
-            self.pitch_scale.set_value(float(preset.effects['pitch'][0]) / sox_multiplier)
-            self.pitch_scale.set_sensitive(False)
-        else:
-            self.pitch_scale.set_sensitive(True)
+        for effect_name, scale in self.effects_scales.items():
+            if effect_name in preset.effects:
+                scale.set_value(preset.effects[effect_name][0])
+                scale.set_sensitive(False)
+            else:
+                scale.set_sensitive(True)
 
         self.restart_sox()
 
