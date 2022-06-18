@@ -64,6 +64,8 @@ class MainWindow(Gtk.Window):
         # Load the configuration file
         state.config = config.load_config()
 
+        self.activated = False
+
         # Build the UI
         self.build_ui()
 
@@ -83,6 +85,27 @@ class MainWindow(Gtk.Window):
         dialog.run()
         dialog.destroy()
 
+    def build_parameter_row(self, parameter, effect_name, value_min, value_max):
+        hbox = Gtk.HBox()
+        label = Gtk.Label(parameter)
+        label.set_halign(Gtk.Align.START)
+
+        step = (value_max - value_min) // 4
+        adj = Gtk.Adjustment(0, value_min, value_max, step, step * 2, 0)
+        scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adj)
+        scale.set_valign(Gtk.Align.CENTER)
+        scale.connect('value-changed', self.scale_moved)
+
+        # By default, disable the pitch shift slider to force the user to pick an effect
+        scale.set_sensitive(False)
+
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_end(scale, True, True, 0)
+
+        setattr(self, f'{effect_name}_scale', scale)
+
+        return hbox
+
     def build_ui(self):
         self.vbox = Gtk.VBox()
 
@@ -98,20 +121,7 @@ class MainWindow(Gtk.Window):
         self.hbox_toggle.pack_end(self.toggle_switch, False, False, 0)
 
         # Pitch shift scale
-        self.hbox_pitch = Gtk.HBox()
-        self.pitch_label = Gtk.Label('Pitch Shift ')
-        self.pitch_label.set_halign(Gtk.Align.START)
-
-        self.pitch_adj = Gtk.Adjustment(0, -10, 10, 5, 10, 0)
-        self.pitch_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=self.pitch_adj)
-        self.pitch_scale.set_valign(Gtk.Align.CENTER)
-        self.pitch_scale.connect('value-changed', self.pitch_scale_moved)
-
-        # By default, disable the pitch shift slider to force the user to pick an effect
-        self.pitch_scale.set_sensitive(False)
-
-        self.hbox_pitch.pack_start(self.pitch_label, False, False, 0)
-        self.hbox_pitch.pack_end(self.pitch_scale, True, True, 0)
+        hbox_pitch = self.build_parameter_row('Pitch Shift ', 'pitch', -10, 10)
 
         # Flow box containing the presets
         self.effects_label = Gtk.Label()
@@ -127,7 +137,7 @@ class MainWindow(Gtk.Window):
         self.create_flowbox_items(self.flowbox)
 
         self.vbox.pack_start(self.hbox_toggle, False, False, 5)
-        self.vbox.pack_start(self.hbox_pitch, False, False, 5)
+        self.vbox.pack_start(hbox_pitch, False, False, 5)
         self.vbox.pack_start(self.effects_label, False, False, 5)
         self.vbox.pack_end(self.flowbox, True, True, 0)
 
@@ -144,6 +154,34 @@ class MainWindow(Gtk.Window):
             button.connect('clicked', self.preset_clicked)
             flowbox.add(button)
 
+    def restart_sox(self):
+        if not self.activated:
+            return
+
+        self.terminate_sox()
+
+        ui_values = {
+            'pitch': self.pitch_scale.get_value()
+        }
+        command = utils.build_sox_command(
+            state.current_preset,
+            config_object=state.config,
+            ui_values=ui_values
+        )
+
+        self.sox_process = subprocess.Popen(command.split(' '))
+
+    def set_preset(self, preset):
+        state.current_preset = preset
+
+        if 'pitch' in preset.effects:
+            self.pitch_scale.set_value(float(preset.effects['pitch'][0]) / sox_multiplier)
+            self.pitch_scale.set_sensitive(False)
+        else:
+            self.pitch_scale.set_sensitive(True)
+
+        self.restart_sox()
+
     # Event handlers
     def about_clicked(self, button):
         about = Gtk.AboutDialog()
@@ -158,6 +196,7 @@ class MainWindow(Gtk.Window):
 
     def toggle_activated(self, switch, gparam):
         if switch.get_active():
+            self.activated = True
             # Load module-null-sink
             null_sink = subprocess.check_call(
                 'pacmd load-module module-null-sink sink_name=Lyrebird-Output'.split(' ')
@@ -181,79 +220,31 @@ class MainWindow(Gtk.Window):
 
             state.sink = null_sink
 
-            # Kill the sox process
-            self.terminate_sox()
-
             # Use the default preset, which is "Man" if the loaded preset is not found.
             default_preset = state.loaded_presets[0]
 
-            current_preset = state.current_preset or default_preset
-            if current_preset.override_pitch:
-                # Set the pitch of the slider
-                self.pitch_scale.set_value(float(current_preset.pitch_value))
-                self.pitch_scale.set_sensitive(False)
-
-                command = utils.build_sox_command(
-                    current_preset,
-                    config_object=state.config
-                )
-            else:
-                self.pitch_scale.set_sensitive(True)
-                command = utils.build_sox_command(
-                    current_preset,
-                    config_object=state.config,
-                    scale_object=self.pitch_scale
-                )
-            self.sox_process = subprocess.Popen(command.split(' '))
+            preset = state.current_preset or default_preset
+            self.set_preset(preset)
         else:
+            self.activated = False
             utils.unload_pa_modules(check_state=True)
             self.terminate_sox()
 
-    def pitch_scale_moved(self, event):
+    def scale_moved(self, event):
         global sox_multiplier
         # Very hacky code, we repeatedly kill sox, grab the new value to pitch shift
         # by, and then restart the process.
 
         # Only allow adjusting the pitch if the preset doesn't override the pitch
         if state.current_preset is not None:
-            # Kill the sox process
-            self.terminate_sox()
-
-            if not state.current_preset.override_pitch:
-                # Multiply the pitch shift scale value by the multiplier and feed it to sox
-                command = utils.build_sox_command(
-                    state.current_preset,
-                    config_object=state.config,
-                    scale_object=self.pitch_scale
-                )
-                self.sox_process = subprocess.Popen(command.split(' '))
+            self.restart_sox()
 
     def preset_clicked(self, button):
         global sox_multiplier
-        self.terminate_sox()
 
         # Use a filter to find the currently selected preset
-        current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
-        state.current_preset = current_preset
-
-        if current_preset.override_pitch:
-            # Set the pitch of the slider
-            self.pitch_scale.set_value(float(current_preset.pitch_value))
-            self.pitch_scale.set_sensitive(False)
-
-            command = utils.build_sox_command(
-                state.current_preset,
-                config_object=state.config
-            )
-        else:
-            self.pitch_scale.set_sensitive(True)
-            command = utils.build_sox_command(
-                state.current_preset,
-                config_object=state.config,
-                scale_object=self.pitch_scale
-            )
-
-        self.sox_process = subprocess.Popen(command.split(' '))
+        preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
+        self.set_preset(preset)
 
     def terminate_sox(self, timeout=1):
         if self.sox_process is not None:
