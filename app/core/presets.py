@@ -17,6 +17,8 @@ class Preset:
         '''
         Constructs a `Preset` instance from a dictionary item and returns it
         '''
+        # Since the only key that is not an effect is name,
+        # we can just pop it and the rest use as effects dict
         name = d.pop('name')
 
         # pylint: disable=bad-continuation
@@ -97,6 +99,6 @@ name = "Custom"
 
 def create_presets():
     config.create_config_dir()
-    if not config.presets_path.exists() or True:
+    if not config.presets_path.exists():
         with open(config.presets_path, 'w') as f:
             f.write(PRESETS_CONTENTS)

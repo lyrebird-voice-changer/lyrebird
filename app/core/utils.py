@@ -36,8 +36,6 @@ def build_sox_command(preset, config_object=None, ui_values=None):
 
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
 
-    print(command)
-
     return command
 
 def unload_pa_modules(check_state=False):

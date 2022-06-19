@@ -206,6 +206,7 @@ class MainWindow(Gtk.Window):
         state.current_preset = preset
 
         for effect_name, scale in self.effects_scales.items():
+            # If effect is already in preset, use the value and disable the scale
             if effect_name in preset.effects:
                 scale.set_value(preset.effects[effect_name][0])
                 scale.set_sensitive(False)
