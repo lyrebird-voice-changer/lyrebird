@@ -14,37 +14,26 @@ from gi.repository import Gtk, Gdk, GdkPixbuf
 def key_or_default(key, dict, default):
     return dict[key] if key in dict else default
 
-def build_sox_command(preset, config_object=None, scale_object=None):
+def build_sox_command(preset, config_object=None, ui_values=None):
     '''
     Builds and returns a sox command from a preset object
     '''
-    multiplier = 100
     effects = []
 
+    for effect_name, effect_params in preset.effects.items():
+        params_str = ' '.join(map(str, effect_params))
+        effects.append(f'{effect_name} {params_str}')
 
-    # Pitch shift
-    if preset.pitch_value == 'default':
-        effects.append('pitch 0')
-    if preset.pitch_value == 'scale':
-        effects.append(f'pitch {float(scale_object.get_value()) * multiplier}')
-    else:
-        effects.append(f'pitch {float(preset.pitch_value) * multiplier}')
+    # Apply scales effects after preset effects only if they are not already applied by preset
+    for effect_name, effect_value in ui_values.items():
+        if effect_name not in preset.effects:
+            effects.append(f'{effect_name} {effect_value}')
 
-    # Volume boosting
-    if preset.volume_boost == 'default' or preset.volume_boost == None:
-        effects.append('vol 0dB')
-    else:
-        effects.append(f'vol {int(preset.volume_boost)}dB')
-
-    # Downsampling
-    if preset.downsample_amount != 'none':
-        effects.append(f'downsample {int(preset.downsample_amount)}')
-    else:
-        # Append downsample of 1 to fix a bug where the downsample isn't being reverted
-        # when we disable the effect with it on.
-        effects.append('downsample 1')
-
+    # To fix the error which appear when no effects applied
     sox_effects = ' '.join(effects)
+    if not sox_effects:
+        sox_effects = 'pitch 0'
+
     command = f'sox --buffer {config_object.buffer_size or 1024} -q -t pulseaudio default -t pulseaudio Lyrebird-Output {sox_effects}'
 
     return command
