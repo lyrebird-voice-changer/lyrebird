@@ -4,10 +4,6 @@ Simple and powerful voice changer for Linux, written in GTK 3.
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/lyrebird-voice-changer/lyrebird/master/preview.png)
 
-# Why?
-
-I decided to write this as a tool for myself, partly for fun and partly because I hate my own voice and since there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
-
 # Features
 
 - Built in effects for accurate male and female voices
@@ -15,6 +11,11 @@ I decided to write this as a tool for myself, partly for fun and partly because 
 - Manual pitch scale for finer adjustment
 - Creates its own temporary virtual input device
 - A clean and easy to use GUI
+
+# Limitations
+
+- Lyrebird requires PulseAudio instead of PipeWire, many modern repos like Ubuntu ship with PipeWire by default, this may mean that Lyrebird may be incompatible with your repo. Try running `pactl` in your terminal, if the command isn't found, then you're not using PulseAudio.
+- The voice changer operates with a few seconds of delay.
 
 # Install
 
@@ -61,6 +62,7 @@ drivers = alsa,pulse,core,oss
 allow-moves=yes
 ```
 
+
 ## Common Issues
 
 ### `ModuleNotFoundError: No module named 'lyrebird.mainwindow'`
@@ -104,6 +106,7 @@ volume_boost = "2"
 - PulseAudio
 - More versatility and options down the road
 
-# v2, the C rewrite
+# Why?
 
-Lyrebird v2 is currently being worked on in branch [c](https://github.com/lyrebird-voice-changer/lyrebird/tree/c). If you are a C developer familiar or willing to learn the Glib API, please come and join us make Lyrebird even better.
+[Abi](https://github.com/megabytesofrem) created Lyrebird partly for fun, and partly because they hated their own voice and there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
+
