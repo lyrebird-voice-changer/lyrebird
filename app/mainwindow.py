@@ -59,7 +59,7 @@ class MainWindow(Gtk.Window):
         # Unload the null sink module if there is one from last time.
         # The only reason there would be one already, is if the application was closed without
         # toggling the switch to off (aka a crash was experienced).
-        utils.unload_pa_modules(check_state=False)
+        utils.unload_pa_modules()
 
         # Load the configuration file
         state.config = config.load_config()
@@ -149,7 +149,7 @@ class MainWindow(Gtk.Window):
         about = Gtk.AboutDialog()
         about.set_program_name('Lyrebird Voice Changer')
         about.set_version("v1.1.0")
-        about.set_copyright('(c) Charlotte 2020')
+        about.set_copyright('(c) Lyrebird 2020-2022')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
 
@@ -160,24 +160,14 @@ class MainWindow(Gtk.Window):
         if switch.get_active():
             # Load module-null-sink
             null_sink = subprocess.check_call(
-                'pacmd load-module module-null-sink sink_name=Lyrebird-Output'.split(' ')
+                'pactl load-module module-null-sink sink_name=Lyrebird-Output node.description="Lyrebird Output"'.split(' ')
             )
             remap_sink = subprocess.check_call(
-                'pacmd load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor'\
+                'pactl load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor node.description="Lyrebird Virtual Input"'\
                     .split(' ')
             )
 
-            print(f'Loaded null output sink ({null_sink}), and remap sink ({remap_sink})')
-
-            subprocess.check_call(
-                'pacmd update-sink-proplist Lyrebird-Output device.description="Lyrebird Output"'\
-                    .split(' ')
-            )
-            subprocess.check_call(
-                'pacmd update-source-proplist Lyrebird-Input device.description="Lyrebird Virtual Input"'\
-                    .split(' ')
-            )
-
+            print(f'Loaded null output sink and remap sink')
 
             state.sink = null_sink
 
@@ -206,7 +196,7 @@ class MainWindow(Gtk.Window):
                 )
             self.sox_process = subprocess.Popen(command.split(' '))
         else:
-            utils.unload_pa_modules(check_state=True)
+            utils.unload_pa_modules()
             self.terminate_sox()
 
     def pitch_scale_moved(self, event):
@@ -269,5 +259,5 @@ class MainWindow(Gtk.Window):
         self.terminate_sox()
         self.lock_file.close()
         utils.destroy_lock()
-        utils.unload_pa_modules(check_state=False)
+        utils.unload_pa_modules()
         Gtk.main_quit()

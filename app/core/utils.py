@@ -49,17 +49,6 @@ def build_sox_command(preset, config_object=None, scale_object=None):
 
     return command
 
-def unload_pa_modules(check_state=False):
-    '''
-    Unloads both the PulseAudio null output
-    If `check_state` is `True`, then this will check if `state.sink` is not -1.
-    '''
-
-    # Unload if we don't care about state, or we do and there is a sink loaded
-    if not check_state or state.sink != -1:
-        subprocess.call('pacmd unload-module module-null-sink'.split(" "))
-        subprocess.call('pacmd unload-module module-remap-source'.split(' '))
-
 def show_error_message(msg, parent, title):
     '''
     Create an error message dialog with string message.
@@ -100,3 +89,72 @@ def destroy_lock():
     '''
     if lock_file_path.exists():
         lock_file_path.unlink()
+        
+def parse_pactl_info_short(lines):
+    '''
+    Parses `pactl info short` into tuples containing the module ID,
+    the module type and the attributes of the module. It is designed
+    only for named modules and as such junk data may be included in
+    the returned list.
+    
+    Returns an array of tuples that take the form:
+        (module_id (str), module_type (str), attributes (attribute tuples))
+      
+    The attribute tuples:
+        (key (str), value (str))
+        
+    An example output might look like:
+        [
+            ( '30', 'module-null-sink', [('sink_name', 'Lyrebird-Output')] ),
+            ( '31', 'module-remap-source', [('source_name', 'Lyrebird-Input'), ('master', 'Lyrebird-Output.monitor')] )
+        ]
+    '''
+    data = []
+    split_lines = lines.split("\n")
+    for line in split_lines:
+        info = line.split("\t")
+        if len(info) <= 2:
+            continue
+        
+        if info[2] and len(info[2]) > 0:
+            key_values = list(map(lambda key_value: tuple(key_value.split("=")), info[2].split(" ")))
+            data.append((info[0], info[1], key_values))
+        else:
+            data.append((info[0], info[1], []))
+    return data
+    
+def get_sink_name(tuple):
+    print(tuple)
+    if tuple[0] == "sink_name":
+        return tuple[1]
+    elif tuple[0] == "source_name":
+        return tuple[1]
+    else:
+        return None
+
+def unload_pa_modules():
+    '''
+    Unloads all Lyrebird null sinks.
+    '''
+    pactl_list = subprocess.run(["pactl", "list", "short"], capture_output=True, encoding="utf8")
+    stdout = pactl_list.stdout
+    modules = parse_pactl_info_short(stdout)
+    lyrebird_module_ids = []
+    for module in modules:
+        if len(module) < 3:
+            continue;
+        if len(module[2]) < 1:
+            continue;
+
+        # print(module)
+        if module[1] == "module-null-sink":
+            sink_name = get_sink_name(module[2][0])
+            if sink_name == "Lyrebird-Output":
+                lyrebird_module_ids.append(module[0])
+        elif module[1] == "module-remap-source":
+            sink_name = get_sink_name(module[2][0])
+            if sink_name == "Lyrebird-Input":
+                lyrebird_module_ids.append(module[0])
+
+    for id in lyrebird_module_ids:
+            subprocess.run(["pactl", "unload-module", str(id)])
