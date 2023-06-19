@@ -1,5 +1,5 @@
 Name:          lyrebird
-Summary:       Simple and powerful voice changer for Linux, written in GTK 3.
+Summary:       Simple and powerful voice changer for Linux, written in GTK.
 URL:           https://github.com/lyrebird-voice-changer/%{name}
 
 Version:       1.1.0
@@ -18,7 +18,7 @@ Requires:      pulseaudio
 Requires:      sox
 
 %description
-Simple and powerful voice changer for Linux, written in GTK 3.
+Simple and powerful voice changer for Linux, written in GTK.
 
 %prep
 %setup -q -n %{name}-%{version}

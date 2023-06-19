@@ -3,7 +3,7 @@
 import gi
 import subprocess
 
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # Core imports
@@ -17,33 +17,27 @@ from app.core.presets import Preset
 # Multiplier for pitch shifting
 sox_multiplier = 100
 
-class MainWindow(Gtk.Window):
+class MainWindow(Gtk.ApplicationWindow):
     '''
     Main window for Lyrebird
-    Lyrebird is a simple and powerful voice changer for Linux, written in GTK 3.
+    Lyrebird is a simple and powerful voice changer for Linux, written in GTK.
     '''
 
-    def __init__(self):
-        Gtk.Window.__init__(self, title='Lyrebird')
-        self.set_border_width(10)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.set_size_request(600, 500)
         self.set_default_size(600, 500)
 
         headerbar = Gtk.HeaderBar()
-        headerbar.set_show_close_button(True)
-        headerbar.props.title = 'Lyrebird'
+        headerbar.set_show_title_buttons(True)
 
-        about_btn = Gtk.Button.new_from_icon_name('help-about-symbolic', Gtk.IconSize.BUTTON);
+        about_btn = Gtk.Button.new_from_icon_name('help-about-symbolic');
         about_btn.connect('clicked', self.about_clicked)
         headerbar.pack_start(about_btn)
 
-        self.set_wmclass ('Lyrebird', 'Lyrebird')
         self.set_title('Lyrebird')
         self.set_titlebar(headerbar)
-
-        # Set the icon
-        self.set_icon_from_file('icon.png')
 
         # Create the lock file to ensure only one instance of Lyrebird is running at once
         lock_file = utils.place_lock()
@@ -84,34 +78,40 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
 
     def build_ui(self):
-        self.vbox = Gtk.VBox()
+        self.vbox = Gtk.Box.new(Gtk.Orientation.VERTICAL, 5)
+        self.vbox.set_margin_start(10)
+        self.vbox.set_margin_end(10)
+        self.vbox.set_margin_top(10)
+        self.vbox.set_margin_bottom(10)
 
         # Toggle switch for Lyrebird
-        self.hbox_toggle = Gtk.HBox()
-        self.toggle_label = Gtk.Label('Toggle Lyrebird')
+        self.hbox_toggle = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        self.toggle_label = Gtk.Label.new('Toggle Lyrebird')
         self.toggle_label.set_halign(Gtk.Align.START)
+        self.toggle_label.set_hexpand(True)
 
         self.toggle_switch = Gtk.Switch()
         self.toggle_switch.set_size_request(10, 25)
         self.toggle_switch.connect('notify::active', self.toggle_activated)
-        self.hbox_toggle.pack_start(self.toggle_label, False, False, 0)
-        self.hbox_toggle.pack_end(self.toggle_switch, False, False, 0)
+        self.hbox_toggle.append(self.toggle_label)
+        self.hbox_toggle.append(self.toggle_switch)
 
         # Pitch shift scale
-        self.hbox_pitch = Gtk.HBox()
-        self.pitch_label = Gtk.Label('Pitch Shift ')
+        self.hbox_pitch = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        self.pitch_label = Gtk.Label.new('Pitch Shift ')
         self.pitch_label.set_halign(Gtk.Align.START)
 
-        self.pitch_adj = Gtk.Adjustment(0, -10, 10, 5, 10, 0)
+        self.pitch_adj = Gtk.Adjustment.new(0, -10, 10, 5, 10, 0)
         self.pitch_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=self.pitch_adj)
         self.pitch_scale.set_valign(Gtk.Align.CENTER)
+        self.pitch_scale.set_hexpand(True)
         self.pitch_scale.connect('value-changed', self.pitch_scale_moved)
 
         # By default, disable the pitch shift slider to force the user to pick an effect
         self.pitch_scale.set_sensitive(False)
 
-        self.hbox_pitch.pack_start(self.pitch_label, False, False, 0)
-        self.hbox_pitch.pack_end(self.pitch_scale, True, True, 0)
+        self.hbox_pitch.append(self.pitch_label)
+        self.hbox_pitch.append(self.pitch_scale)
 
         # Flow box containing the presets
         self.effects_label = Gtk.Label()
@@ -120,18 +120,19 @@ class MainWindow(Gtk.Window):
 
         self.flowbox = Gtk.FlowBox()
         self.flowbox.set_valign(Gtk.Align.START)
+        self.flowbox.set_hexpand(True)
         self.flowbox.set_max_children_per_line(5)
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
         # Create the flow box items
         self.create_flowbox_items(self.flowbox)
 
-        self.vbox.pack_start(self.hbox_toggle, False, False, 5)
-        self.vbox.pack_start(self.hbox_pitch, False, False, 5)
-        self.vbox.pack_start(self.effects_label, False, False, 5)
-        self.vbox.pack_end(self.flowbox, True, True, 0)
+        self.vbox.append(self.hbox_toggle)
+        self.vbox.append(self.hbox_pitch)
+        self.vbox.append(self.effects_label)
+        self.vbox.append(self.flowbox)
 
-        self.add(self.vbox)
+        self.set_child(self.vbox)
 
     def create_flowbox_items(self, flowbox):
         state.loaded_presets = presets.load_presets()
@@ -142,7 +143,7 @@ class MainWindow(Gtk.Window):
 
             button.set_label(preset.name)
             button.connect('clicked', self.preset_clicked)
-            flowbox.add(button)
+            flowbox.append(button)
 
     # Event handlers
     def about_clicked(self, button):
@@ -150,7 +151,7 @@ class MainWindow(Gtk.Window):
         about.set_program_name('Lyrebird Voice Changer')
         about.set_version("v1.1.0")
         about.set_copyright('(c) Lyrebird 2020-2022')
-        about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
+        about.set_comments('Simple and powerful voice changer for Linux, written in GTK')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
 
         about.run()

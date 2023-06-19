@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 import gi
-import subprocess
+import sys
 
 import app.mainwindow as mainwindow
 import app.core.utils as utils
 
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gio, Gtk
 
+class Lyrebird(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
 
-if __name__ == '__main__':
-    win = mainwindow.MainWindow()
-    win.connect('destroy', win.close)
-    win.show_all()
+    def on_activate(self, app):
+        self.win = mainwindow.MainWindow(application=app)
+        self.win.present()
 
-    try:
-        Gtk.main()
-    except BaseException as e:
-        win.close()
-        raise e
+app = Lyrebird(application_id="org.lyrebird.Lyrebird")
+app.run(sys.argv)

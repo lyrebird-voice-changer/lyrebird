@@ -1,6 +1,6 @@
 # Lyrebird
 
-Simple and powerful voice changer for Linux, written in GTK 3.
+Simple and powerful voice changer for Linux, written in GTK.
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/lyrebird-voice-changer/lyrebird/master/preview.png)
 
