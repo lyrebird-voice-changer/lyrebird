@@ -1,20 +1,19 @@
 # Lyrebird
 
-Simple and powerful voice changer for Linux, written in GTK 3.
+Simple and powerful voice changer for Linux, written with Python & GTK.
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/lyrebird-voice-changer/lyrebird/master/preview.png)
 
 ## Features
 
-- Built in effects for accurate male and female voices
-- Ability to create and load custom presets
-- Manual pitch scale for finer adjustment
-- Creates its own temporary virtual input device
-- A clean and easy to use GUI
+- Built in effects for accurate male and female voices.
+- Ability to create and load custom presets.
+- Manual pitch scale for finer adjustment.
+- Creates its own temporary virtual input device.
+- A clean and easy to use GUI.
 
 ## Limitations
 
-- Lyrebird requires PulseAudio instead of PipeWire, many modern repos like Ubuntu ship with PipeWire by default, this may mean that Lyrebird may be incompatible with your repo. Try running `pactl` in your terminal, if the command isn't found, then you're not using PulseAudio.
 - The voice changer operates with a few seconds of delay.
 
 ## Install
@@ -34,14 +33,32 @@ These packages are provided by the community and are not maintained by Lyrebird 
 
 ### Manually
 
-If a package for your distro isn't provided above then you can use the provided installer script:
+If a package for your distro isn't provided above then you can install the requirements below and use the provided installer script:
 
 1. Download the latest `tar.gz` from the [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases) and extract it
 2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
 3. Run `install.sh` to install dependencies and Lyrebird itself
 4. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
 
-## Usage
+## Requirements
+
+Installing via package manager will automatically install these packages, only concern yourself with these if you are using the install script.
+
+- **Python 3.7+** - Ubuntu/Debian `python3` / Arch `python3`
+    - **toml** - Ubuntu/Debian `python3-toml` / Arch `python-toml`
+    - **python-gobject** - Ubuntu/Debian `python3-gi` / Arch `python-gobject`
+- **pavucontrol** - Ubuntu/Debian `pavucontrol` / Arch `pavucontrol`
+- **SoX** - Ubuntu/Debian `sox libsox-fmt-pulse` / Arch `sox`
+- PulseAudio utilities (compatible with PipeWire) - Ubuntu/Debian `pipewire-pulse pulseaudio-utilities`
+
+One-liners for install:
+
+  * Ubuntu/Debian - `sudo apt install python3 python3-toml python3-gi pavucontrol sox libsox-fmt-pulse pulseaudio-utilities`
+  * Arch - `sudo pacman -S python3 python-toml python-gobject pavucontrol sox`
+
+*(If you wish to see your distro here please submit an issue/pull request for this section.)*
+
+## Lyrebird Usage
 
 1. Select a preset or set a custom pitch and flip the switch
 2. Change the input device for the application to **Lyrebird Virtual Input**, this can be done in-app or using `pavucontrol` if you're not given the option
@@ -61,7 +78,6 @@ drivers = alsa,pulse,core,oss
 [pulse]
 allow-moves=yes
 ```
-
 
 ### Common Issues
 
@@ -94,19 +110,3 @@ override_pitch_slider = true
 # Boost by 2 dB to make the voice louder
 volume_boost = "2"
 ```
-
-## Requirements
-
-- Python 3.7+
-    - toml
-    - python-gobject (check [issue #13](https://github.com/lyrebird-voice-changer/lyrebird/issues/13) if having issues)
-- pavucontrol
-- SoX
-    - libsox-fmt-pulse (some distros may already bundle with SoX)
-- PulseAudio
-- More versatility and options down the road
-
-## Why?
-
-[Abi](https://github.com/megabytesofrem) created Lyrebird partly for fun, and partly because they hated their own voice and there was no decent Linux voice changers. The UI is based *very* loosely off of Clownfish for Windows, and is very simple and easy to use.
-

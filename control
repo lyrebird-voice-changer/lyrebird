@@ -1,0 +1,10 @@
+Package: lyrebird
+Version: 1.1.1-1
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: python3 (>= 3.7.0), python3-toml, python3-gi, sox, libsox-fmt-pulse, pavucontrol, pulseaudio-utilities
+Maintainer: Harry Stanton <harry@harrystanton.com>
+Homepage: https://github.com/lyrebird-voice-changer/lyrebird
+Bugs: https://github.com/lyrebird-voice-changer/lyrebird/issues
+Description: Simple and powerful voice changer for Linux, written with Python & GTK.
