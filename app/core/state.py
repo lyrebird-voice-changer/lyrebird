@@ -1,6 +1,3 @@
-# Stores the id of the current Pulseaudio sink, if there is one loaded
-sink = -1
-
 # Stores the configuration (loaded from .config/lyrebird/config.toml)
 config = None
 
@@ -9,3 +6,5 @@ loaded_presets = []
 
 # Stores the current preset
 current_preset = None
+
+audio = None

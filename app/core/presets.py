@@ -2,8 +2,10 @@ import toml
 import pathlib
 from pathlib import Path
 
-from app.core.utils import key_or_default
 import app.core.config as config
+
+def key_or_default(key, dict, default):
+    return dict[key] if key in dict else default
 
 class Preset:
     def __init__(self,
@@ -118,10 +120,10 @@ override_pitch_slider = false
 volume_boost = "8"
 
 [[presets]]
-name = "Custom"
-pitch_value = "scale"
+name = "Reset"
+pitch_value = "0"
 downsample_amount = "none"
-override_pitch_slider = false
+override_pitch_slider = true
 '''
 
 def create_presets():

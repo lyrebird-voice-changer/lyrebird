@@ -3,21 +3,17 @@
 import gi
 import subprocess
 
-# gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # Core imports
 import app.core.presets as presets
 import app.core.state as state
 import app.core.config as config
-import app.core.utils as utils
+import app.core.lock as lock
+from app.core.presets import Preset
+from app.core.audio import Audio
 
 from app.ui.alert import Alert
-
-from app.core.presets import Preset
-
-# Multiplier for pitch shifting
-sox_multiplier = 100
 
 class MainWindow(Gtk.Window):
     '''
@@ -50,23 +46,21 @@ class MainWindow(Gtk.Window):
         self.set_icon_from_file('icon.png')
 
         # Create the lock file to ensure only one instance of Lyrebird is running at once
-        lock_file = utils.place_lock()
+        lock_file = lock.place_lock()
         if lock_file is None:
             alert.show_error("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
             exit(1)
         else:
             self.lock_file = lock_file
 
-        # Setup for handling SoX process
-        self.sox_process = None
+        # Load the configuration file
+        state.config = config.load_config()
+        state.audio = Audio()
 
         # Unload the null sink module if there is one from last time.
         # The only reason there would be one already, is if the application was closed without
         # toggling the switch to off (aka a crash was experienced).
-        utils.unload_pa_modules()
-
-        # Load the configuration file
-        state.config = config.load_config()
+        state.audio.unload_pa_modules()
 
         # Build the UI
         self.build_ui()
@@ -95,8 +89,6 @@ class MainWindow(Gtk.Window):
         self.pitch_scale.set_valign(Gtk.Align.CENTER)
         self.pitch_scale.connect('value-changed', self.pitch_scale_moved)
 
-        # By default, disable the pitch shift slider to force the user to pick an effect
-        self.pitch_scale.set_sensitive(False)
 
         self.hbox_pitch.pack_start(self.pitch_label, False, False, 0)
         self.hbox_pitch.pack_end(self.pitch_scale, True, True, 0)
@@ -136,80 +128,47 @@ class MainWindow(Gtk.Window):
     def about_clicked(self, button):
         about = Gtk.AboutDialog()
         about.set_program_name('Lyrebird Voice Changer')
-        about.set_version("v1.1.0")
-        about.set_copyright('(c) Lyrebird 2020-2022')
+        about.set_version("v1.2.0")
+        about.set_copyright('Copyright (c) 2020-2023 megabytesofrem, Harry Stanton')
         about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
 
         about.run()
         about.destroy()
 
+    def get_current_present(self):
+        default_preset = state.loaded_presets[0]
+        return state.current_preset or default_preset
+
+    def start_voice_changer(self):
+        preset = self.get_current_present()
+        pitch = self.pitch_scale.get_value()
+        state.audio.run_sox(pitch, preset)
+
+    def stop_voice_changer(self):
+        state.audio.kill_sox()
+        state.audio.unload_pa_modules()
+
     def toggle_activated(self, switch, gparam):
         if switch.get_active():
             # Load module-null-sink
-            null_sink = subprocess.check_call(
-                'pactl load-module module-null-sink sink_name=Lyrebird-Output node.description="Lyrebird Output"'.split(' ')
-            )
-            remap_sink = subprocess.check_call(
-                'pactl load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor node.description="Lyrebird Virtual Input"'\
-                    .split(' ')
-            )
-
-            print(f'Loaded null output sink and remap sink')
-
-            state.sink = null_sink
+            state.audio.load_pa_modules()
 
             # Kill the sox process
-            self.terminate_sox()
+            state.audio.kill_sox()
 
             # Use the default preset, which is "Man" if the loaded preset is not found.
-            default_preset = state.loaded_presets[0]
-
-            current_preset = state.current_preset or default_preset
-            if current_preset.override_pitch:
-                # Set the pitch of the slider
-                self.pitch_scale.set_value(float(current_preset.pitch_value))
-                self.pitch_scale.set_sensitive(False)
-
-                command = utils.build_sox_command(
-                    current_preset,
-                    config_object=state.config
-                )
-            else:
-                self.pitch_scale.set_sensitive(True)
-                command = utils.build_sox_command(
-                    current_preset,
-                    config_object=state.config,
-                    scale_object=self.pitch_scale
-                )
-            self.sox_process = subprocess.Popen(command.split(' '))
+            
+            self.start_voice_changer()
         else:
-            utils.unload_pa_modules()
-            self.terminate_sox()
+            self.stop_voice_changer()
 
     def pitch_scale_moved(self, event):
-        global sox_multiplier
-        # Very hacky code, we repeatedly kill sox, grab the new value to pitch shift
-        # by, and then restart the process.
-
-        # Only allow adjusting the pitch if the preset doesn't override the pitch
-        if state.current_preset is not None:
-            # Kill the sox process
-            self.terminate_sox()
-
-            if not state.current_preset.override_pitch:
-                # Multiply the pitch shift scale value by the multiplier and feed it to sox
-                command = utils.build_sox_command(
-                    state.current_preset,
-                    config_object=state.config,
-                    scale_object=self.pitch_scale
-                )
-                self.sox_process = subprocess.Popen(command.split(' '))
+        if self.toggle_switch.get_active():
+            state.audio.kill_sox()
+            self.start_voice_changer()
 
     def preset_clicked(self, button):
-        global sox_multiplier
-        self.terminate_sox()
-
         # Use a filter to find the currently selected preset
         current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
         state.current_preset = current_preset
@@ -217,35 +176,16 @@ class MainWindow(Gtk.Window):
         if current_preset.override_pitch:
             # Set the pitch of the slider
             self.pitch_scale.set_value(float(current_preset.pitch_value))
-            self.pitch_scale.set_sensitive(False)
-
-            command = utils.build_sox_command(
-                state.current_preset,
-                config_object=state.config
-            )
-        else:
-            self.pitch_scale.set_sensitive(True)
-            command = utils.build_sox_command(
-                state.current_preset,
-                config_object=state.config,
-                scale_object=self.pitch_scale
-            )
-
-        self.sox_process = subprocess.Popen(command.split(' '))
-
-    def terminate_sox(self, timeout=1):
-        if self.sox_process is not None:
-            self.sox_process.terminate()
-            try:
-                self.sox_process.wait(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                self.sox_process.kill()
-                self.sox_process.wait(timeout=timeout)
-            self.sox_process = None
+        
+        if self.toggle_switch.get_active():
+            state.audio.kill_sox()
+            self.start_voice_changer()
 
     def close(self, *args):
-        self.terminate_sox()
+        state.audio.kill_sox()
+        state.audio.unload_pa_modules()
+
         self.lock_file.close()
-        utils.destroy_lock()
-        utils.unload_pa_modules()
+        lock.destroy_lock()
+        
         Gtk.main_quit()

@@ -158,11 +158,10 @@ Additional help can be found in the <a href="https://github.com/lyrebird-voice-c
 audio_server = Launch.determine_audio_server()
 print(f"[info] Audio server: {audio_server}")
 
-import app.mainwindow as mainwindow
-import app.core.utils as utils
+from app.ui.mainwindow import MainWindow
 
 # Start main window and launch Lyrebird
-win = mainwindow.MainWindow()
+win = MainWindow()
 win.connect('destroy', win.close)
 win.show_all()
 

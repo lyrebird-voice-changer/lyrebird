@@ -1,8 +1,7 @@
 import toml
-import pathlib
+
 from dataclasses import dataclass
 from pathlib import Path
-import app.core.config as config
 
 @dataclass
 class Configuration:
