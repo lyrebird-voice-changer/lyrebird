@@ -49,23 +49,6 @@ def build_sox_command(preset, config_object=None, scale_object=None):
 
     return command
 
-def show_error_message(msg, parent, title):
-    '''
-    Create an error message dialog with string message.
-    '''
-    dialog = Gtk.MessageDialog(
-        parent         = None,
-        type           = Gtk.MessageType.ERROR,
-        buttons        = Gtk.ButtonsType.OK,
-        message_format = msg)
-    dialog.set_transient_for(parent)
-    dialog.set_title(title)
-
-    dialog.show()
-    dialog.run()
-    dialog.destroy()
-    sys.exit(1)
-
 lock_file_path = Path(Path('/tmp') / 'lyrebird.lock')
 def place_lock():
     '''
@@ -124,7 +107,6 @@ def parse_pactl_info_short(lines):
     return data
     
 def get_sink_name(tuple):
-    print(tuple)
     if tuple[0] == "sink_name":
         return tuple[1]
     elif tuple[0] == "source_name":

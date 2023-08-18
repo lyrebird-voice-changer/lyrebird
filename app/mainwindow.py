@@ -3,7 +3,7 @@
 import gi
 import subprocess
 
-gi.require_version('Gtk', '3.0')
+# gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # Core imports
@@ -11,6 +11,8 @@ import app.core.presets as presets
 import app.core.state as state
 import app.core.config as config
 import app.core.utils as utils
+
+from app.ui.alert import Alert
 
 from app.core.presets import Preset
 
@@ -30,6 +32,8 @@ class MainWindow(Gtk.Window):
         self.set_size_request(600, 500)
         self.set_default_size(600, 500)
 
+        self.alert = Alert(self)
+
         headerbar = Gtk.HeaderBar()
         headerbar.set_show_close_button(True)
         headerbar.props.title = 'Lyrebird'
@@ -48,7 +52,7 @@ class MainWindow(Gtk.Window):
         # Create the lock file to ensure only one instance of Lyrebird is running at once
         lock_file = utils.place_lock()
         if lock_file is None:
-            self.show_error_message("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
+            alert.show_error("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
             exit(1)
         else:
             self.lock_file = lock_file
@@ -66,22 +70,6 @@ class MainWindow(Gtk.Window):
 
         # Build the UI
         self.build_ui()
-
-    def show_error_message(self, title, msg):
-        '''
-        Create an error message dialog with title and string message.
-        '''
-        dialog = Gtk.MessageDialog(
-            parent         = self,
-            type           = Gtk.MessageType.ERROR,
-            buttons        = Gtk.ButtonsType.OK,
-            message_format = msg)
-        dialog.set_transient_for(self)
-        dialog.set_title(title)
-
-        dialog.show()
-        dialog.run()
-        dialog.destroy()
 
     def build_ui(self):
         self.vbox = Gtk.VBox()
