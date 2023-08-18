@@ -110,3 +110,7 @@ override_pitch_slider = true
 # Boost by 2 dB to make the voice louder
 volume_boost = "2"
 ```
+
+## Developers
+
+Lyrebird was created by [megabytesofrem](https://github.com/megabytesofrem) in 2020, and is now maintained by [Harry Stanton](https://github.com/harrego).
