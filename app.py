@@ -75,7 +75,7 @@ If after installing PulseAudio utilities and you still see this error, or your d
 Additional help can be found in the <a href="https://github.com/lyrebird-voice-changer/lyrebird/issues">Lyrebird repo</a>.'''
 
     alert = Alert(None)
-    alert.show_error("Lyrebird Error: PulseAudio utilities are missing", msg)
+    alert.show_error_markup("Lyrebird Error: PulseAudio utilities are missing", msg)
     sys.exit(1)
 
 # Check for TOML
@@ -103,7 +103,7 @@ For all other distros, try running:
 Additional help can be found in the <a href="https://github.com/lyrebird-voice-changer/lyrebird/issues">Lyrebird repo</a>.'''
 
     alert = Alert(None)
-    alert.show_error("Lyrebird Error: Python TOML is Missing", msg)
+    alert.show_error_markup("Lyrebird Error: Python TOML is Missing", msg)
     sys.exit(1)
 
 # Check for SoX
@@ -130,7 +130,7 @@ For all other distros, try searching for the package "sox".
 Additional help can be found in the <a href="https://github.com/lyrebird-voice-changer/lyrebird/issues">Lyrebird repo</a>.'''
 
     alert = Alert(None)
-    alert.show_error("Lyrebird Error: sox is missing", msg)
+    alert.show_error_markup("Lyrebird Error: sox is missing", msg)
     sys.exit(1)
 
 if not Launch.check_sox_pulse():
@@ -152,7 +152,7 @@ For all other distros, try searching for the the installation of "sox pulseaudio
 Additional help can be found in the <a href="https://github.com/lyrebird-voice-changer/lyrebird/issues">Lyrebird repo</a>.'''
 
     alert = Alert(None)
-    alert.show_error("Lyrebird Error: SoX PulseAudio audio driver missing", msg)
+    alert.show_error_markup("Lyrebird Error: SoX PulseAudio audio driver missing", msg)
     sys.exit(1)
 
 audio_server = Launch.determine_audio_server()
@@ -173,5 +173,5 @@ except BaseException as e:
 
 Please report to the <a href="https://github.com/lyrebird-voice-changer/lyrebird/issues">Lyrebird repo</a>.'''
     alert = Alert(None)
-    alert.show_error("Fatal Lyrebird Error", msg)
+    alert.show_error_markup("Fatal Lyrebird Error", msg)
     win.close()

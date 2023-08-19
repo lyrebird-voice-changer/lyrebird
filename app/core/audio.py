@@ -23,18 +23,18 @@ class Audio:
         multiplier = 100
         command_effects = []
 
-        command_effects += ["pitch", str(int(scale * multiplier))]
+        command_effects += ["pitch", str(scale * multiplier)]
 
         # Volume boosting
-        if preset.volume_boost != 'default' or preset.volume_boost != None:
-            command_effects += ["vol", str(int(preset.volume_boost)) + "dB"]
+        if preset.volume_boost != None:
+            command_effects += ["vol", str(preset.volume_boost) + "dB"]
         else:
             # Fix a bug where SoX uses last given volumne
             command_effects += ["vol", "0"]
 
         # Downsampling
-        if preset.downsample_amount != 'none':
-            command_effects += ["downsample", str(int(preset.downsample_amount))]
+        if preset.downsample_amount != None:
+            command_effects += ["downsample", str(preset.downsample_amount)]
         else:
             # Append downsample of 1 to fix a bug where the downsample isn't being reverted
             # when we disable the effect with it on.

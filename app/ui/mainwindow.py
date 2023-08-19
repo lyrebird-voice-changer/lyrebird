@@ -48,7 +48,7 @@ class MainWindow(Gtk.Window):
         # Create the lock file to ensure only one instance of Lyrebird is running at once
         lock_file = lock.place_lock()
         if lock_file is None:
-            alert.show_error("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
+            alert.show_error_markup("Lyrebird Already Running", "Only one instance of Lyrebird can be ran at a time.")
             exit(1)
         else:
             self.lock_file = lock_file
@@ -61,6 +61,16 @@ class MainWindow(Gtk.Window):
         # The only reason there would be one already, is if the application was closed without
         # toggling the switch to off (aka a crash was experienced).
         state.audio.unload_pa_modules()
+
+        load_presets_state = presets.load_presets()
+        
+        loaded_presets = load_presets_state["presets"]
+        failed_presets = load_presets_state["failed"]
+
+        state.loaded_presets = loaded_presets
+        if len(failed_presets) > 0:
+            msg = f"The following presets failed to import: {', '.join(failed_presets)}. See the console for more details."
+            self.alert.show_warning("Failed to Import Presets", msg)
 
         # Build the UI
         self.build_ui()
@@ -114,8 +124,6 @@ class MainWindow(Gtk.Window):
         self.add(self.vbox)
 
     def create_flowbox_items(self, flowbox):
-        state.loaded_presets = presets.load_presets()
-
         for preset in state.loaded_presets:
             button = Gtk.Button()
             button.set_size_request(80, 80)
@@ -173,7 +181,7 @@ class MainWindow(Gtk.Window):
         current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
         state.current_preset = current_preset
 
-        if current_preset.override_pitch:
+        if current_preset.pitch_value != None:
             # Set the pitch of the slider
             self.pitch_scale.set_value(float(current_preset.pitch_value))
         

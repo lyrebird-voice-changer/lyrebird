@@ -12,28 +12,11 @@ class Preset:
                 name,
                 pitch_value,
                 downsample_amount,
-                override_pitch,
                 volume_boost):
         self.name = name
         self.pitch_value = pitch_value
         self.downsample_amount = downsample_amount
-        self.override_pitch = override_pitch
         self.volume_boost = volume_boost
-
-    @staticmethod
-    def from_dict(d):
-        '''
-        Constructs a `Preset` instance from a dictionary item and returns it
-        '''
-
-        # pylint: disable=bad-continuation
-        return Preset(
-                name=d['name'],
-                pitch_value=d['pitch_value'],
-                downsample_amount=key_or_default(key='downsample_amount',  dict=d, default='1'),
-                override_pitch=key_or_default(key='override_pitch_slider', dict=d, default='false'),
-                volume_boost=key_or_default(key='volume_boost', dict=d, default='0')
-        )
 
 def load_presets():
     '''
@@ -41,17 +24,67 @@ def load_presets():
     a list of `Preset` objects from the file
     '''
 
-    create_presets()
+    # create_presets()
     presets = []
+    failed = []
 
     path = config.presets_path
     with open(path, 'r') as f:
         presets_data = toml.loads(f.read())['presets']
         for item in presets_data:
-            preset = Preset.from_dict(item)
+            # name
+            if "name" not in item:
+                print("[error] Preset missing name, skipping")
+                continue
+            name = item["name"]
+            # pitch value
+            pitch_value = None
+            if "pitch_value" in item and item["pitch_value"] != "scale":
+                try:
+                    pitch_value = float(item["pitch_value"])
+                except ValueError:
+                    failed.append(name)
+                    print(f"[error] Preset '{name}' failed to load: invalid pitch value '{item['pitch_value']}'")
+                    continue
+            # downsample
+            downsample_amount = None
+            if "downsample_amount" in item and item["downsample_amount"] != "none":
+                try:
+                    downsample_amount = int(item["downsample_amount"])
+                except ValueError:
+                    failed.append(name)
+                    print(f"[error] Preset '{name}' failed to load: invalid downsample value '{item['downsample_amount']}'")
+                    continue
+            # volume boost
+            volume_boost = None
+            if "volume_boost" in item:
+                if item["volume_boost"] != "none":
+                    try:
+                        volume_boost = int()
+                    except ValueError:
+                        failed.append(name)
+                        print(f"[error] Preset '{name}' failed to load: invalid volume boost value '{item['volume_boost']}'")
+                        continue
+            preset = Preset(name=name,
+                pitch_value=pitch_value,
+                downsample_amount=downsample_amount,
+                volume_boost=volume_boost)
             presets.append(preset)
 
-    return presets
+    return { "presets": presets, "failed": failed }
+
+DEFAULT_PRESETS = [
+    Preset("Man", -1.5, None, None),
+    Preset("Woman", 2.5, None, None),
+    Preset("Boy", 1.25, None, None),
+    Preset("Girl", 2.8, None, None),
+    Preset("Darth Vader", -6.0, None, None),
+    Preset("Chipmunk", 10.0, None, None),
+    Preset("Russian Mic", None, 8, 0),
+    Preset("Radio", None, 6, 0),
+    Preset("Megaphone", None, 2, 0),
+    Preset("Reset", 0.0, None, None)
+]
 
 PRESETS_CONTENTS = '''
 # Effect presets are defined in presets.toml
