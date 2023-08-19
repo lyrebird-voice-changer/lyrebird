@@ -127,7 +127,8 @@ class MainWindow(Gtk.Window):
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
 
         # Create the flow box items
-        self.create_flowbox_items(self.flowbox)
+        self.preset_buttons = self.create_flowbox_items(self.flowbox)
+        self.preset_buttons[9].set_sensitive(False)
 
         self.vbox.pack_start(self.hbox_toggle, False, False, 5)
         self.vbox.pack_start(self.hbox_pitch, False, False, 5)
@@ -137,13 +138,16 @@ class MainWindow(Gtk.Window):
         self.add(self.vbox)
 
     def create_flowbox_items(self, flowbox):
+        buttons = []
         for preset in state.loaded_presets:
             button = Gtk.Button()
             button.set_size_request(80, 80)
+            buttons.append(button)
 
             button.set_label(preset.name)
             button.connect('clicked', self.preset_clicked)
             flowbox.add(button)
+        return buttons
 
     # Event handlers
     def about_clicked(self, button):
@@ -158,7 +162,7 @@ class MainWindow(Gtk.Window):
         about.destroy()
 
     def get_current_present(self):
-        default_preset = state.loaded_presets[0]
+        default_preset = state.loaded_presets[9]
         return state.current_preset or default_preset
 
     def start_voice_changer(self):
@@ -193,6 +197,10 @@ class MainWindow(Gtk.Window):
         # Use a filter to find the currently selected preset
         current_preset = list(filter(lambda p: p.name == button.props.label, state.loaded_presets))[0]
         state.current_preset = current_preset
+
+        for preset_button in self.preset_buttons:
+            preset_button.set_sensitive(True)
+        button.set_sensitive(False)
 
         if current_preset.pitch_value != None:
             # Set the pitch of the slider

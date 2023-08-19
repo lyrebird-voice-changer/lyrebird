@@ -46,7 +46,7 @@ DEFAULT_PRESETS = [
     Preset("Russian Mic", None, 8, 0),
     Preset("Radio", None, 6, 0),
     Preset("Megaphone", None, 2, 0),
-    Preset("Reset", 0.0, None, None)
+    Preset("Off", 0.0, None, None)
 ]
 
 LEGACY_PRESETS = [
