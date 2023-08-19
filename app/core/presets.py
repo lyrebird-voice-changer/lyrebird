@@ -18,6 +18,66 @@ class Preset:
         self.downsample_amount = downsample_amount
         self.volume_boost = volume_boost
 
+    def matches(self, y):
+        name = self.name == y.name
+        pitch = self.pitch_value == y.pitch_value
+        downsample = self.downsample_amount == y.downsample_amount
+        volume = self.volume_boost == y.volume_boost
+
+        return name and pitch and downsample and volume
+
+    def dictionary(self):
+        dictionary = { "name": self.name }
+        if self.pitch_value is not None:
+            dictionary["pitch_value"] = self.pitch_value
+        if self.downsample_amount is not None:
+            dictionary["downsample_amount"] = self.downsample_amount
+        if self.volume_boost is not None:
+            dictionary["volume_boost"] = self.volume_boost
+        return dictionary
+
+DEFAULT_PRESETS = [
+    Preset("Man", -1.5, None, None),
+    Preset("Woman", 2.5, None, None),
+    Preset("Boy", 1.25, None, None),
+    Preset("Girl", 2.8, None, None),
+    Preset("Darth Vader", -6.0, None, None),
+    Preset("Chipmunk", 10.0, None, None),
+    Preset("Russian Mic", None, 8, 0),
+    Preset("Radio", None, 6, 0),
+    Preset("Megaphone", None, 2, 0),
+    Preset("Reset", 0.0, None, None)
+]
+
+LEGACY_PRESETS = [
+    Preset("Man", -1.5, None, None),
+    Preset("Woman", 2.5, None, None),
+    Preset("Boy", 1.25, None, None),
+    Preset("Girl", 2.8, None, None),
+    Preset("Darth Vader", -6.0, None, None),
+    Preset("Chipmunk", 10.0, None, None),
+    Preset("Russian Mic", None, 8, 8),
+    Preset("Radio", None, 6, 5),
+    Preset("Megaphone", None, 2, 8),
+    Preset("Custom", None, None, None)
+]
+
+PRESETS_TOML_HEADER='''# Effect presets are defined in presets.toml
+# The following parameters are available for presets
+
+# name: Preset name, will be displayed in the GUI
+# pitch_value: The pitch value of the preset, float value between -10.0 to 10.0. Omit if pitch value should not be affected from slider value.
+# downsample_amount Downsample by an integer factor.
+# volume_boost: Amount in dB to boost the audio. Can be negative to make the audio quieter.
+
+# e.g.
+# [[presets]]
+# name = "Bad Mic"
+# pitch_value = -1.5
+# downsample_amount = 8
+# volume_boost = 8
+'''
+
 def load_presets():
     '''
     Loads presets from ~/.config/lyrebird/presets.toml and returns
@@ -29,6 +89,11 @@ def load_presets():
     failed = []
 
     path = config.presets_path
+
+    if not config.presets_path.exists():
+        create_presets()
+        return { "presets": [], "failed": [] }
+
     with open(path, 'r') as f:
         presets_data = toml.loads(f.read())['presets']
         for item in presets_data:
@@ -42,6 +107,7 @@ def load_presets():
             if "pitch_value" in item and item["pitch_value"] != "scale":
                 try:
                     pitch_value = float(item["pitch_value"])
+                    pitch_value = min(max(pitch_value, -10), 10)
                 except ValueError:
                     failed.append(name)
                     print(f"[error] Preset '{name}' failed to load: invalid pitch value '{item['pitch_value']}'")
@@ -60,7 +126,7 @@ def load_presets():
             if "volume_boost" in item:
                 if item["volume_boost"] != "none":
                     try:
-                        volume_boost = int()
+                        volume_boost = int(item["volume_boost"])
                     except ValueError:
                         failed.append(name)
                         print(f"[error] Preset '{name}' failed to load: invalid volume boost value '{item['volume_boost']}'")
@@ -71,96 +137,39 @@ def load_presets():
                 volume_boost=volume_boost)
             presets.append(preset)
 
-    return { "presets": presets, "failed": failed }
+    custom_presets = []
+    contains_legacy = False
+    for preset in presets:
+        legacy_match = False
+        for legacy_preset in LEGACY_PRESETS:
+            legacy_match = legacy_preset.matches(preset)
+            if legacy_match:
+                break
+        if not legacy_match:
+            custom_presets.append(preset)
+        else:
+            contains_legacy = True
 
-DEFAULT_PRESETS = [
-    Preset("Man", -1.5, None, None),
-    Preset("Woman", 2.5, None, None),
-    Preset("Boy", 1.25, None, None),
-    Preset("Girl", 2.8, None, None),
-    Preset("Darth Vader", -6.0, None, None),
-    Preset("Chipmunk", 10.0, None, None),
-    Preset("Russian Mic", None, 8, 0),
-    Preset("Radio", None, 6, 0),
-    Preset("Megaphone", None, 2, 0),
-    Preset("Reset", 0.0, None, None)
-]
+    if contains_legacy:
+        print(f"[info] Config file ({path}) contains legacy presets, writing new file with {len(custom_presets)} custom preset(s)")
+        create_presets(custom_presets)
+        
+    return { "presets": custom_presets, "failed": failed }
 
-PRESETS_CONTENTS = '''
-# Effect presets are defined in presets.toml
-# The following parameters are available for presets
-
-# name = Preset name, will be displayed in the GUI
-# pitch_value = The pitch value of the preset, if you want to be able to adjust this use "scale"
-# downsample_amount = The amount of downsampling to do, set as "none" if you don't want any
-# override_pitch_slider = Whether the preset overrides the pitch slider or not
-
-[[presets]]
-name = "Man"
-pitch_value = "-1.5"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Woman"
-pitch_value = "2.5"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Boy"
-pitch_value = "1.25"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Girl"
-pitch_value = "2.8"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Darth Vader"
-pitch_value = "-6"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Chipmunk"
-pitch_value = "10.0"
-downsample_amount = "none"
-override_pitch_slider = true
-
-[[presets]]
-name = "Russian Mic"
-pitch_value = "scale"
-downsample_amount = "8"
-override_pitch_slider = false
-volume_boost = "8"
-
-[[presets]]
-name = "Radio"
-pitch_value = "scale"
-downsample_amount = "6"
-override_pitch_slider = false
-volume_boost = "5"
-
-[[presets]]
-name = "Megaphone"
-pitch_value = "scale"
-downsample_amount = "2"
-override_pitch_slider = false
-volume_boost = "8"
-
-[[presets]]
-name = "Reset"
-pitch_value = "0"
-downsample_amount = "none"
-override_pitch_slider = true
-'''
-
-def create_presets():
+def create_presets(presets=[]):
     config.create_config_dir()
-    if not config.presets_path.exists():
-        with open(config.presets_path, 'w') as f:
-            f.write(PRESETS_CONTENTS)
+
+    if config.presets_path.exists():
+        old_file_data = None
+        with open(config.presets_path, "r") as f:
+            old_file_data = f.read()
+        with open(config.presets_old_path, "w") as f:
+            f.write(old_file_data)
+
+    with open(config.presets_path, "w") as f:
+        f.write(PRESETS_TOML_HEADER + "\n")
+
+        presets = map(lambda x: x.dictionary(), presets)
+        presets = list(presets)
+        toml_data = toml.dumps({ "presets": presets })
+        f.write(toml_data)

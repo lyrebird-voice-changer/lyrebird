@@ -5,11 +5,12 @@ from pathlib import Path
 
 @dataclass
 class Configuration:
-    buffer_size: int
+    buffer_size: int = 128
 
 config_dir = Path(Path.home() / ".config" / "lyrebird")
 config_path = Path(config_dir / "config.toml")
 presets_path = Path(config_dir / "presets.toml")
+presets_old_path = Path(config_dir / "presets.toml.old")
 
 def load_config():
     '''
@@ -32,9 +33,9 @@ CONFIG_CONTENTS = '''
 # Configuration file for Lyrebird
 # The following parameters are configurable
 # buffer_size = The buffer size to use for sox. Higher = better quality, at
-# the cost of higher latency. Default value is 1024
+# the cost of higher latency. Default value is 128
 [[config]]
-buffer_size = 1024
+buffer_size = 128
 '''
 
 def create_config():

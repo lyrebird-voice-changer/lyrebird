@@ -54,7 +54,15 @@ class MainWindow(Gtk.Window):
             self.lock_file = lock_file
 
         # Load the configuration file
-        state.config = config.load_config()
+        try:
+            float("x")
+            state.config = config.load_config()
+        except BaseException as e:
+            print(f"[error] Failed to load config file: {str(e)}")
+            self.alert.show_warning("Failed to Config File", f"Lyrebird failed to load config, your config.toml file is most likely malformed. See the console for further details.\n\nConfig file location: {config.config_path}")
+            # load with default options
+            state.config = config.Configuration()
+
         state.audio = Audio()
 
         # Unload the null sink module if there is one from last time.
@@ -62,15 +70,21 @@ class MainWindow(Gtk.Window):
         # toggling the switch to off (aka a crash was experienced).
         state.audio.unload_pa_modules()
 
-        load_presets_state = presets.load_presets()
-        
-        loaded_presets = load_presets_state["presets"]
-        failed_presets = load_presets_state["failed"]
+        state.loaded_presets = presets.DEFAULT_PRESETS
 
-        state.loaded_presets = loaded_presets
-        if len(failed_presets) > 0:
-            msg = f"The following presets failed to import: {', '.join(failed_presets)}. See the console for more details."
-            self.alert.show_warning("Failed to Import Presets", msg)
+        try:
+            load_presets_state = presets.load_presets()
+        
+            loaded_presets = load_presets_state["presets"]
+            failed_presets = load_presets_state["failed"]
+
+            state.loaded_presets += loaded_presets
+            if len(failed_presets) > 0:
+                msg = f"The following presets failed to import: {', '.join(failed_presets)}. See the console for more details."
+                self.alert.show_warning("Failed to Import Presets", msg)
+        except BaseException as e:
+            print(f"[error] Failed to load custom presets: {str(e)}")
+            self.alert.show_warning("Failed to Load Presets", f"Lyrebird failed to load custom presets, your presets.toml file is most likely malformed. See the console for further details.\n\nPresets file location: {config.presets_path}")
 
         # Build the UI
         self.build_ui()
@@ -151,7 +165,7 @@ class MainWindow(Gtk.Window):
     def start_voice_changer(self):
         preset = self.get_current_present()
         pitch = self.pitch_scale.get_value()
-        state.audio.run_sox(pitch, preset)
+        state.audio.run_sox(pitch, preset, state.config.buffer_size)
 
     def stop_voice_changer(self):
         state.audio.kill_sox()
