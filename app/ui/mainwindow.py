@@ -55,7 +55,6 @@ class MainWindow(Gtk.Window):
 
         # Load the configuration file
         try:
-            float("x")
             state.config = config.load_config()
         except BaseException as e:
             print(f"[error] Failed to load config file: {str(e)}")
