@@ -18,27 +18,45 @@ Simple and powerful voice changer for Linux, written with Python & GTK.
 
 ## Install
 
-### Distro Packages
+Once installed, Lyrebird can be launched from your launcher (GNOME, Xfce, Rofi) or by running `lyrebird` in the command line.
 
-Check the [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases) to find a package for your distro.
+### Ubuntu / Debian / Mint / Pop!_OS
 
-- [x] Ubuntu/Debian (download `.deb` from [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases))
-- [x] Arch (AUR package `lyrebird`)
+```sh
+wget "https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.0/lyrebird_1.2.0-1.deb" && sudo apt install ./lyrebird_1.2.0-1.deb
+```
 
-#### Community
+You can find more [releases here](https://github.com/lyrebird-voice-changer/lyrebird/releases).
 
-These packages are provided by the community and are not maintained by Lyrebird developers.
+### Arch Linux
 
-- [x] Gentoo (ebuild in the [edgets overlay](https://github.com/BlueManCZ/edgets/tree/master/media-sound/lyrebird))
+Use an AUR package manager?
+
+```sh
+yay -S lyrebird
+```
+
+Otherwise:
+
+```sh
+wget "https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.0/lyrebird-1.2.0-1-any-archlinux.pkg.tar.zst" && sudo pacman -U lyrebird-1.2.0-1-any-archlinux.pkg.tar.zst
+```
+
+You can find more [releases here](https://github.com/lyrebird-voice-changer/lyrebird/releases).
 
 ### Manually
 
 If a package for your distro isn't provided above then you can install the requirements below and use the provided installer script:
 
-1. Download the latest `tar.gz` from the [releases page](https://github.com/lyrebird-voice-changer/lyrebird/releases) and extract it
-2. Make sure you satisfy all requirements listed below (e.g. Python 3.7, using PulseAudio, sox)
-3. Run `install.sh` to install dependencies and Lyrebird itself
-4. Launch Lyrebird from your preferred application launcher (e.g. GNOME, Rofi)
+```sh
+wget "https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.0/lyrebird_1.2.0-1.tar.gz" && tar xf lyrebird_1.2.0-1.tar.gz && cd lyrebird_1.2.0-1 && sudo ./install.sh
+```
+
+### Community Packages
+
+These packages are provided by the community and are not maintained by Lyrebird developers.
+
+- [x] Gentoo (ebuild in the [edgets overlay](https://github.com/BlueManCZ/edgets/tree/master/media-sound/lyrebird))
 
 ## Requirements
 
@@ -49,11 +67,12 @@ Installing via package manager will automatically install these packages, only c
     - **python-gobject** - Ubuntu/Debian `python3-gi` / Arch `python-gobject`
 - **pavucontrol** - Ubuntu/Debian `pavucontrol` / Arch `pavucontrol`
 - **SoX** - Ubuntu/Debian `sox libsox-fmt-pulse` / Arch `sox`
-- PulseAudio utilities (compatible with PipeWire) - Ubuntu/Debian `pipewire-pulse pulseaudio-utilities`
+- **PipeWire**
+- **PulseAudio utilities** (compatible with PipeWire) - Ubuntu/Debian `pipewire-pulse pulseaudio-utils` / Arch `pipewire-pulse`
 
-One-liners for install:
+One-liners to install requirements:
 
-  * Ubuntu/Debian - `sudo apt install python3 python3-toml python3-gi pavucontrol sox libsox-fmt-pulse pulseaudio-utilities`
+  * Ubuntu/Debian - `sudo apt install python3 python3-toml python3-gi pavucontrol sox libsox-fmt-pulse pulseaudio-utils`
   * Arch - `sudo pacman -S python3 python-toml python-gobject pavucontrol sox`
 
 *(If you wish to see your distro here please submit an issue/pull request for this section.)*
@@ -89,31 +108,29 @@ If the issue still sticks around then please open a GitHub issue and include the
 
 ## Editing Presets
 
-Presets and config is initally stored in `/etc/lyrebird/` however it can be overriden by copying the files to `~/.config/lyrebird/`.
-
-To edit and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
+Custom presets are stored in `~/.config/lyrebird/presets.toml`. To edit and add your own presets edit the file `presets.toml`, this file is in the TOML format and the syntax is described below.
 
 ```toml
-# name = Preset name, will be displayed in the GUI
-# pitch_value = The pitch value of the preset, if you want to be able to adjust this use "scale"
-# downsample_amount = The amount of downsampling to do, set as "none" if you don't want any
-# override_pitch_slider = Whether the preset overrides the pitch slider or not
-# volume_boost = The amount of decibels to boost by
+# Effect presets are defined in presets.toml
+# The following parameters are available for presets
 
-# Example preset, the [[presets]] is required for each preset
-[[presets]]
-name = "Woman"
-pitch_value = "2.5"
-downsample_amount = "none"
-override_pitch_slider = true
+# name: Preset name, will be displayed in the GUI
+# pitch_value: The pitch value of the preset, float value between -10.0 to 10.0. Omit if pitch value should not be affected from slider value.
+# downsample_amount Downsample by an integer factor.
+# volume_boost: Amount in dB to boost the audio. Can be negative to make the audio quieter.
 
-# Boost by 2 dB to make the voice louder
-volume_boost = "2"
+# e.g.
+# [[presets]]
+# name = "Bad Mic"
+# pitch_scale = -1.5
+# downsample_amount = 8
+# volume_boost = 8
 ```
 
 ## Packaging
 
-  * Packaging for Debian is handled in a (separate repo)[https://github.com/lyrebird-voice-changer/lyrebird-deb].
+  * Packaging for Debian is handled in a [separate repo](https://github.com/lyrebird-voice-changer/lyrebird-deb).
+  * Packaging for Arch (AUR) is handled in a [separate repo](https://github.com/lyrebird-voice-changer/lyrebird-arch).
 
 ## Developers
 

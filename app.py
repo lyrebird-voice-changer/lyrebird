@@ -51,7 +51,7 @@ from app.ui.alert import Alert
 if not Launch.check_pactl():
     console_msg = '''[error] PulseAudio utilities are missing from your system.
 
-  * On Ubuntu, Debian, pop_OS, or Mint, try running: sudo apt install pulseaudio-utilities
+  * On Ubuntu, Debian, pop_OS, or Mint, try running: sudo apt install pulseaudio-utils
   * On Arch, this comes with the package "pipewire-pulse", please refer to the Arch Wiki page (below).
   * On all other distros, this package may have a different name, try searching for "pactl" or "pulseaudio utilities".
   
@@ -64,7 +64,7 @@ Arch Wiki PipeWire page: https://wiki.archlinux.org/title/PipeWire (for Arch use
     msg = '''<b>Error:</b> PulseAudio utilities are missing from your system.
 
 On Ubuntu, Debian, pop_OS, or Mint, try running:
-    <i>sudo apt install pulseaudio-utilities</i>
+    <i>sudo apt install pulseaudio-utils</i>
 
 On Arch, this comes with the package <i>pipewire-pulse</i>, please refer to the <a href="https://wiki.archlinux.org/title/PipeWire">Arch Wiki page</a>.
 
