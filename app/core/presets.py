@@ -43,7 +43,7 @@ DEFAULT_PRESETS = [
     Preset("Girl", 2.8, None, None),
     Preset("Darth Vader", -6.0, None, None),
     Preset("Chipmunk", 10.0, None, None),
-    Preset("Russian Mic", None, 8, 0),
+    Preset("Bad Mic", None, 8, 0),
     Preset("Radio", None, 6, 0),
     Preset("Megaphone", None, 2, 0),
     Preset("Off", 0.0, None, None)
@@ -73,9 +73,9 @@ PRESETS_TOML_HEADER='''# Effect presets are defined in presets.toml
 # e.g.
 # [[presets]]
 # name = "Bad Mic"
-# pitch_value = -1.5
-# downsample_amount = 8
-# volume_boost = 8
+# pitch_value = "-1.5"
+# downsample_amount = "8"
+# volume_boost = "8"
 '''
 
 def load_presets():

@@ -18,7 +18,6 @@ from app.ui.alert import Alert
 class MainWindow(Gtk.Window):
     '''
     Main window for Lyrebird
-    Lyrebird is a simple and powerful voice changer for Linux, written in GTK 3.
     '''
 
     def __init__(self):
@@ -155,7 +154,7 @@ class MainWindow(Gtk.Window):
         about.set_program_name('Lyrebird Voice Changer')
         about.set_version("v1.2.0")
         about.set_copyright('Copyright (c) 2020-2023 megabytesofrem, Harry Stanton')
-        about.set_comments('Simple and powerful voice changer for Linux, written in GTK 3')
+        about.set_comments('Simple and powerful voice changer for Linux, written in Python & GTK.')
         about.set_logo(GdkPixbuf.Pixbuf.new_from_file('icon.png'))
 
         about.run()

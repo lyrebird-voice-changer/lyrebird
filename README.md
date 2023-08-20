@@ -111,6 +111,10 @@ override_pitch_slider = true
 volume_boost = "2"
 ```
 
+## Packaging
+
+  * Packaging for Debian is handled in a (separate repo)[https://github.com/lyrebird-voice-changer/lyrebird-deb].
+
 ## Developers
 
 Lyrebird was created by [megabytesofrem](https://github.com/megabytesofrem) in 2020, and is now maintained by [Harry Stanton](https://github.com/harrego).
