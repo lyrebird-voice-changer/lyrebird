@@ -16,8 +16,7 @@ Requires:      python3-toml
 Requires:      python3-gobject
 Requires:      gtk3
 Requires:      sox
-Requires:      pulseaudio-utils
-Requires:      (pulseaudio or pipewire)
+Requires:      (pulseaudio or (pipewire and pipewire-pulseaudio))
 
 %description
 Simple and powerful voice changer for Linux, written with Python & GTK.
