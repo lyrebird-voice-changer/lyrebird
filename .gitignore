@@ -137,3 +137,10 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 .vscode
+
+# RPM packages
+*.rpm
+*.srpm
+
+# JetBrains IDEs
+.idea
