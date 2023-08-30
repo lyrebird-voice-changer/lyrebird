@@ -44,6 +44,10 @@ wget "https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.
 
 You can find more [releases here](https://github.com/lyrebird-voice-changer/lyrebird/releases).
 
+### Fedora
+
+A `.spec` file is included in the repo, download the [main source](https://github.com/lyrebird-voice-changer/lyrebird/archive/refs/tags/v1.2.0.tar.gz) and build. [Detailed instructions can be found here.](https://github.com/lyrebird-voice-changer/lyrebird/pull/124#issuecomment-1690471719)
+
 ### Manually
 
 If a package for your distro isn't provided above then you can install the requirements below and use the provided installer script:
