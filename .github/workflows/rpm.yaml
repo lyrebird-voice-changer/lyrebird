@@ -1,0 +1,46 @@
+name: RPM build
+
+on:
+  push:
+    paths:
+      - .github/workflows/rpm.yaml
+      - ci/*
+      - lyrebird.spec
+
+jobs:
+  centos-stream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Podman
+        run: |
+          sudo apt update
+          sudo apt-get --assume-yes install podman
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build rpm
+        run: 'podman run --rm -v .:/lyrebird centos:stream /lyrebird/ci/build-rpm.sh'
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: centos-packages
+          retention-days: 7
+          if-no-files-found: error
+          path: 'ci/*.rpm'
+  fedora-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Podman
+        run: |
+          sudo apt update
+          sudo apt-get --assume-yes install podman
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build rpm
+        run: 'podman run --rm -v .:/lyrebird fedora:latest /lyrebird/ci/build-rpm.sh'
+      - name: Archive packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: fedora-packages
+          retention-days: 7
+          if-no-files-found: error
+          path: 'ci/*.rpm'

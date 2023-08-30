@@ -3,7 +3,7 @@ Summary:       Simple and powerful voice changer for Linux, written with Python 
 URL:           https://github.com/lyrebird-voice-changer/%{name}
 
 Version:       1.2.0
-Release:       2%{dist}
+Release:       3%{dist}
 License:       MIT
 
 Source0:       %{URL}/archive/v%{version}.tar.gz
@@ -16,7 +16,7 @@ Requires:      python3-toml
 Requires:      python3-gobject
 Requires:      gtk3
 Requires:      sox
-Requires:      (pulseaudio or (pipewire and pipewire-pulseaudio))
+Requires:      ((pipewire and pipewire-pulseaudio) or pulseaudio)
 
 %description
 Simple and powerful voice changer for Linux, written with Python & GTK.
@@ -31,12 +31,12 @@ Features:
 %setup -q -n %{name}-%{version}
 
 %install
-install -dm 0755 %{buildroot}/%{_bindir}
-install -m 0755 %{name} %{buildroot}/%{_bindir}/
-install -dm 0755 %{buildroot}/%{_datadir}/%{name}
-cp -rf app app.py icon.png %{buildroot}/%{_datadir}/%{name}/
-install -dm 0755 %{buildroot}/%{_datadir}/applications
-BIN_PATH=%{_bindir} SHARE_PATH=%{_datadir}/%{name} envsubst < %{name}.desktop > %{buildroot}/%{_datadir}/applications/%{name}.desktop
+install -dm 0755 %{buildroot}%{_bindir}
+install -m 0755 %{name} %{buildroot}%{_bindir}/
+install -dm 0755 %{buildroot}%{_datadir}/%{name}
+cp -rf app app.py icon.png %{buildroot}%{_datadir}/%{name}/
+install -dm 0755 %{buildroot}%{_datadir}/applications
+BIN_PATH=%{_bindir} SHARE_PATH=%{_datadir}/%{name} envsubst < %{name}.desktop > %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files
 %defattr(-,root,root,-)
@@ -47,6 +47,10 @@ BIN_PATH=%{_bindir} SHARE_PATH=%{_datadir}/%{name} envsubst < %{name}.desktop > 
 %doc README.md CHANGELOG.md
 
 %changelog
+* Wed Aug 23 2023 ps-gill <pgdev@daak.ca> - 1.2.0-3
+- Rearranging "Requires" to give PipeWire preference.
+- Updating spec "install" path to remove additional slashes.
+
 * Wed Aug 23 2023 sT331h0rs3 <sT331h0rs3@gmail.com> - 1.2.0-2
 - Actualized dependencies.
 
