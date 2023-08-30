@@ -44,9 +44,17 @@ wget "https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.
 
 You can find more [releases here](https://github.com/lyrebird-voice-changer/lyrebird/releases).
 
-### Fedora
+### Fedora / CentOS
 
-A `.spec` file is included in the repo, download the [main source](https://github.com/lyrebird-voice-changer/lyrebird/archive/refs/tags/v1.2.0.tar.gz) and build. [Detailed instructions can be found here.](https://github.com/lyrebird-voice-changer/lyrebird/pull/124#issuecomment-1690471719)
+1. Download the latest RPM file for your distro:
+  * [Fedora](https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.0/lyrebird-1.2.0-3-fedora.fc38.noarch.rpm)
+  * [CentOS](https://github.com/lyrebird-voice-changer/lyrebird/releases/download/v1.2.0/lyrebird-1.2.0-3-centos.el8.noarch.rpm)
+
+2. Install the local RPM file, changing the name of the file to the one downloaded:
+
+```sh
+sudo yum localinstall lyrebird-1.2.0-3-fedora.fc38.noarch.rpm
+```
 
 ### Manually
 
