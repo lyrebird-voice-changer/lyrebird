@@ -1,6 +1,8 @@
 # shutil.which supported from Python 3.3+
 from shutil import which
+from json import loads
 import subprocess
+
 
 class Launch:
     # Check if a shell command is available on the system.
@@ -47,12 +49,8 @@ class Launch:
 
     @staticmethod
     def determine_audio_server():
-        pactl_info = subprocess.run(["pactl", "info"], capture_output=True, encoding="utf8")
-        stdout = pactl_info.stdout
-        server_name_prefix = "Server Name: "
-        for line in stdout.split("\n"):
-            if line.startswith(server_name_prefix):
-                audio_server = line[len(server_name_prefix):]
-                if len(audio_server) == 0:
-                    return None
-                return audio_server
+        pactl_info = subprocess.run(["pactl", "--format=json", "info"], capture_output=True, encoding="utf8")
+        server_info = loads(pactl_info.stdout)
+        if "server_name" in server_info:
+            return server_info["server_name"]
+        return None
