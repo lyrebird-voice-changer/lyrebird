@@ -52,13 +52,8 @@ class Audio:
             return None
 
     def load_pa_modules(self):
-        self.null_sink = subprocess.check_call(
-            'pactl load-module module-null-sink sink_name=Lyrebird-Output node.description="Lyrebird Output"'.split(' ')
-        )
-        self.remap_sink = subprocess.check_call(
-            'pactl load-module module-remap-source source_name=Lyrebird-Input master=Lyrebird-Output.monitor node.description="Lyrebird Virtual Input"'\
-                .split(' ')
-        )
+        self.null_sink = subprocess.check_call(['pactl', 'load-module', 'module-null-sink', 'sink_name=Lyrebird-Output', 'sink_properties=device.description=Lyrebird_Output'])
+        self.remap_sink = subprocess.check_call(['pactl', 'load-module', 'module-remap-source', 'source_name=Lyrebird-Input', 'master=Lyrebird-Output.monitor', 'source_properties=device.description=Lyrebird_Virtual_Input'])
 
     def get_pactl_modules(self):
         '''
