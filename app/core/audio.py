@@ -30,7 +30,7 @@ class Audio:
             command_effects += ["vol", str(preset.volume_boost) + "dB"]
         else:
             # Fix a bug where SoX uses last given volumne
-            command_effects += ["vol", "0"]
+            command_effects += ["vol", "0dB"]
 
         # Downsampling
         if preset.downsample_amount != None:
