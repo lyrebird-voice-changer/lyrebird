@@ -4,6 +4,12 @@ Simple and powerful voice changer for Linux, written with Python & GTK.
 
 ![Lyrebird Screenshot](https://raw.githubusercontent.com/lyrebird-voice-changer/lyrebird/master/preview.png)
 
+## Archived
+
+As of December 2023, Lyrebird has ceased development and is now archived. Thank you to our users and contributors.
+
+As an alternative, we recommend looking at [Easy Effects](https://github.com/wwmm/easyeffects).
+
 ## Features
 
 - Built in effects for accurate male and female voices.
